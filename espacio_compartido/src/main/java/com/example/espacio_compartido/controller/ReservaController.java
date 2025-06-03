@@ -72,6 +72,18 @@ public class ReservaController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
     }
+    
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
+        logger.info("[CACHE] Eliminando reserva con ID: " + id);
+
+        reservaService.eliminarReserva(id);
+
+        logger.info("[CACHE] Reserva eliminada con éxito! Caché de reservas por estado y lista general eliminada.");
+
+        return ResponseEntity.noContent().build(); // Código 204: Eliminación exitosa
+    }
+
 
 
 

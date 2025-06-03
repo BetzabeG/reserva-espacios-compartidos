@@ -2,13 +2,10 @@ package com.example.espacio_compartido.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,9 +29,6 @@ public class ReservaDTO  implements Serializable{
     @JsonFormat(pattern = "yyyy-MM-dd")
     @PastOrPresent(message = "La fecha de creación no puede ser en el futuro")
     private LocalDate fechaCreacion;
-
-
-
     /* 
     @NotNull(message = "La fecha de reserva es obligatoria")
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Formato de fecha inválido (YYYY-MM-DD)")

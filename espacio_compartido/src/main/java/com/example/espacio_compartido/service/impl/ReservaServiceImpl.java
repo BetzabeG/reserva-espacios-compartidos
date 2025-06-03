@@ -106,28 +106,26 @@ public class ReservaServiceImpl implements IReservaService {
         return convertirAReservaDTO(nuevaReserva);
     }
 
-
-
-
     @Override
     @Transactional
     public ReservaDTO modificarReserva(Long id, ReservaDTO reservaDTO) {
-        // Implementación futura
+        
         return null;
     }
-
     @Override
     @Transactional
+    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas"}, allEntries = true)
     public void eliminarReserva(Long id) {
-        // Implementación futura
-    }
+        Reserva reserva = reservaRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La reserva con ID " + id + " no existe."));
 
+        reservaRepository.delete(reserva);
+    }
     @Override
     public List<ReservaDTO> obtenerReservasPorEspacioYFecha(Long espacioId, LocalDate fecha) {
         // Implementación futura
         return null;
     }
-
     @Override
     public List<ReservaDTO> obtenerReservasPorIdReservador(Long idReservador) {
         // Implementación futura
