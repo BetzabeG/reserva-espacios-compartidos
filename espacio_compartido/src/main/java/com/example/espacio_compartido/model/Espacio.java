@@ -2,6 +2,7 @@ package com.example.espacio_compartido.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -38,4 +39,8 @@ public class Espacio {
 
     @Column(name = "estado", nullable = false)
     private Boolean estado; 
+    
+    // Relación con Reserva (Un espacio puede tener múltiples reservas) + manejo de cascada
+    @OneToMany(mappedBy = "espacio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Reserva> reservas;
 }

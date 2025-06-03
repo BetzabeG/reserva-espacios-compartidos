@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
+import java.util.List;
 
 import jakarta.persistence.*;
 
@@ -44,5 +45,9 @@ public class Reservador {
 
     @Column(name = "estado_e", nullable = false)
     private Boolean estadoE;
+
+    // Relación con Reserva (Un reservador puede tener múltiples reservas) + el manejo de casacada
+    @OneToMany(mappedBy = "reservador", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Reserva> reservas;
 
 }
