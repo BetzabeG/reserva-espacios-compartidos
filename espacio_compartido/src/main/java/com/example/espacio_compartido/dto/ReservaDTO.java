@@ -3,6 +3,7 @@ package com.example.espacio_compartido.dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -10,7 +11,9 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReservaDTO {
+public class ReservaDTO  implements Serializable{
+
+    private Long idReserva;
 
     @NotNull(message = "El identificador del reservador es obligatorio")
     @Positive(message = "El ID del reservador debe ser un número positivo")
