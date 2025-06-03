@@ -5,10 +5,12 @@ import com.example.espacio_compartido.service.IReservaService;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -59,6 +61,18 @@ public class ReservaController {
 
         return ResponseEntity.ok(reservas);
     }
+
+    @PostMapping("/crear")
+    public ResponseEntity<ReservaDTO> crearReserva(@RequestBody @Valid ReservaDTO reservaDTO) {
+        logger.info("[CACHE] Creando nueva reserva... Eliminando caché antigua.");
+
+        ReservaDTO nuevaReserva = reservaService.crearReserva(reservaDTO);
+
+        logger.info("[CACHE] Reserva creada con éxito! Caché de reservas por estado y lista general eliminada.");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
+    }
+
 
 
 

@@ -9,6 +9,7 @@ import com.example.espacio_compartido.repository.EspacioRepository;
 import com.example.espacio_compartido.validation.ReservaValidator;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.espacio_compartido.repository.ReservaRepository;
 import com.example.espacio_compartido.repository.ReservadorRepository;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.CacheEvict;
 
@@ -76,12 +78,36 @@ public class ReservaServiceImpl implements IReservaService {
                 .collect(Collectors.toList());
     }
 
-    @Override
     @Transactional
+    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas"}, allEntries = true) // Limpia caché desactualizado
     public ReservaDTO crearReserva(ReservaDTO reservaDTO) {
-        // Implementación futura
-        return null;
+        reservaDTO.setFechaCreacion(LocalDate.now());
+        reservaValidator.validacionCompletaReserva(reservaDTO);
+
+        // Validamos que el reservador exista
+        boolean existeReservador = reservadorRepository.existsById(reservaDTO.getIdReservador());
+        if (!existeReservador) {
+            throw new EntityNotFoundException("El reservador con ID " + reservaDTO.getIdReservador() + " no existe.");
+        }
+
+        // Validamos que el espacio exista
+        boolean existeEspacio = espacioRepository.existsById(reservaDTO.getIdEspacio());
+        if (!existeEspacio) {
+            throw new EntityNotFoundException("El espacio con ID " + reservaDTO.getIdEspacio() + " no existe.");
+        }
+        boolean existe = reservaRepository.existeReserva(reservaDTO.getIdEspacio(), reservaDTO.getFechaReserva(), reservaDTO.getHoraInicio());
+
+        if (existe) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ese espacio ya está ocupado en la fecha y hora seleccionada.");
+        }
+        Reserva nuevaReserva = convertirAEntidad(reservaDTO);
+        nuevaReserva = reservaRepository.save(nuevaReserva);
+
+        return convertirAReservaDTO(nuevaReserva);
     }
+
+
+
 
     @Override
     @Transactional

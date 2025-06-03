@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -34,6 +35,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
      * @return Lista de reservas con el estado especificado.
      */
     List<Reserva> findByEstadoE(String estado); 
+
+    /**
+     * metodoo extra pare crear reserva
+     */
+    @Query("SELECT COUNT(r) > 0 FROM Reserva r WHERE r.espacio.idEspacio = :idEspacio AND r.fechaReserva = :fechaReserva AND r.horaInicio = :horaInicio")
+    boolean existeReserva(@Param("idEspacio") Long idEspacio, @Param("fechaReserva") LocalDate fechaReserva, @Param("horaInicio") LocalTime horaInicio);
+
 
 
 }
