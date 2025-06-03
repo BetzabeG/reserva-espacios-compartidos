@@ -35,5 +35,31 @@ public class ReservaController {
         logger.info("[RESERVA] Fin obtenerTodasLasReservas: {} (Duración: {} ms)", fin, (fin - inicio));
         return ResponseEntity.ok(reservas);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservaDTO> obtenerReservaPorId(@PathVariable Long id) {
+        long inicio = System.currentTimeMillis();
+        logger.info("[RESERVA] Inicio obtenerReservaPorId: {}", inicio);
+
+        ReservaDTO reserva = reservaService.obtenerReservaPorId(id);
+
+        long fin = System.currentTimeMillis();
+        logger.info("[RESERVA] Fin obtenerReservaPorId: {} (Duración: {} ms)", fin, (fin - inicio));
+        
+        return ResponseEntity.ok(reserva);
+    }
+    @GetMapping("/filtrar")
+    public ResponseEntity<List<ReservaDTO>> obtenerReservasPorEstado(@RequestParam String estado) {
+        long inicio = System.currentTimeMillis();
+        logger.info("[RESERVA] Inicio obtenerReservasPorEstado: Estado solicitado: {}", estado);
+
+        List<ReservaDTO> reservas = reservaService.obtenerReservasPorEstado(estado);
+
+        long fin = System.currentTimeMillis();
+        logger.info("[RESERVA] Fin obtenerReservasPorEstado: {} (Duración: {} ms, Tamaño: {})", fin, (fin - inicio), reservas.size());
+
+        return ResponseEntity.ok(reservas);
+    }
+
+
 
 }

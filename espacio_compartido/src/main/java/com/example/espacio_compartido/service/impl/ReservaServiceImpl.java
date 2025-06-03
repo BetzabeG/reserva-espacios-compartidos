@@ -7,6 +7,9 @@ import com.example.espacio_compartido.model.Reserva;
 import com.example.espacio_compartido.model.Reservador;
 import com.example.espacio_compartido.repository.EspacioRepository;
 import com.example.espacio_compartido.validation.ReservaValidator;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import com.example.espacio_compartido.repository.ReservaRepository;
 import com.example.espacio_compartido.repository.ReservadorRepository;
 import com.example.espacio_compartido.service.IReservaService;
@@ -38,10 +41,10 @@ public class ReservaServiceImpl implements IReservaService {
     }
 
     @Override
-    @Cacheable(value = "todasLasReservas")
-    @Transactional(readOnly = true) //Solo lectura, no permite modificaciones
+    @Cacheable(value = "todasLasReservas") 
+    @Transactional(readOnly = true)
     public List<ReservaDTO> obtenerTodasLasReservas() {
-        List<Reserva> reservas = reservaRepository.findByEstadoEIn(List.of("CONFIRMADA"));
+        List<Reserva> reservas = reservaRepository.findAll(); 
 
         return reservas.stream()
                 .map(this::convertirAReservaDTO)
@@ -50,9 +53,27 @@ public class ReservaServiceImpl implements IReservaService {
 
 
     @Override
+    @Cacheable(value = "reservaPorId", key = "#id")
+    @Transactional(readOnly = true)
     public ReservaDTO obtenerReservaPorId(Long id) {
-        // Implementación futura
-        return null;
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Reserva no encontrada"));
+
+        return convertirAReservaDTO(reserva);
+    }
+    @Override
+    @Cacheable(value = "reservasPorEstado", key = "#estado") // Almacena en caché cada búsqueda por estado
+    @Transactional(readOnly = true) // Solo lectura, evita bloqueos innecesarios
+    public List<ReservaDTO> obtenerReservasPorEstado(String estado) {
+        List<Reserva> reservas = reservaRepository.findByEstadoE(estado);
+
+        if (reservas.isEmpty()) {
+            throw new EntityNotFoundException("No hay reservas con estado: " + estado);
+        }
+
+        return reservas.stream()
+                .map(this::convertirAReservaDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -151,7 +172,6 @@ public class ReservaServiceImpl implements IReservaService {
                 .estadoE(reservaDTO.getEstadoE())
                 .build();
     }
-
 
 }
 

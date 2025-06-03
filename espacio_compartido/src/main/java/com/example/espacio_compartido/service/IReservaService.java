@@ -19,9 +19,15 @@ public interface IReservaService {
      * Obtiene una reserva específica por su ID.
      * @param id ID de la reserva.
      * @return ReservaDTO encontrada.
-     * @throws RuntimeException si la reserva no se encuentra.
      */
     ReservaDTO obtenerReservaPorId(Long id); 
+    /*
+     * Obtener reservas por un estado especifico
+     * @param string del estado solicitado
+     * @return lista de reservasdto encontradas
+     */
+    List<ReservaDTO> obtenerReservasPorEstado(String estado);
+
 
     /**
      * Crea una nueva reserva, validando disponibilidad y datos antes de guardarla.
