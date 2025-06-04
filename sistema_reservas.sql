@@ -48,3 +48,13 @@ INSERT INTO espacio_equipamiento (id_equipamiento, id_espacio, cantidad) VALUES
 (2, 5, 15),  -- 15 computadoras en el espacio 5
 (6, 3, 3),   -- 3 balones en el auditorio (espacio 3)
 (2, 1, 3);
+
+INSERT INTO reserva (id_reservador, id_espacio, fecha_creacion, fecha, hora_inicio, hora_fin, motivo, estado_e) VALUES
+(1, 1, '2025-06-01', '2025-06-05', '08:00', '10:00', 'Clase de programación avanzada', 'CONFIRMADA'),
+(2, 5, '2025-06-02', '2025-06-06', '09:00', '11:00', 'Práctica de desarrollo web', 'CONFIRMADA'),
+(3, 2, '2025-06-03', '2025-06-07', '07:30', '09:30', 'Análisis de muestras químicas', 'CONFIRMADA'),
+(4, 3, '2025-06-04', '2025-06-08', '10:00', '12:00', 'Seminario de derecho constitucional', 'PENDIENTE'),
+(5, 4, '2025-06-05', '2025-06-09', '15:00', '16:30', 'Reunión administrativa mensual', 'CONFIRMADA'),
+(6, 1, '2025-06-06', '2025-06-10', '18:00', '20:00', 'Grupo de estudio nocturno', 'CANCELADA'),
+(7, 5, '2025-06-07', '2025-06-11', '13:00', '15:00', 'Simulación de hackathon', 'PENDIENTE'),
+(8, 2, '2025-06-08', '2025-06-12', '14:00', '16:00', 'Investigación académica de bioquímica', 'CONFIRMADA');

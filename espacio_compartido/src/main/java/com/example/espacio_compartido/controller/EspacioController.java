@@ -22,7 +22,7 @@ import java.util.Map;
 @RequestMapping("/api/espacio")
 @Validated
 public class EspacioController {
-
+    //prueba
     private final IEspacioService espacioService;
     private static final Logger logger = LoggerFactory.getLogger(EspacioController.class);
 
@@ -147,6 +147,17 @@ public class EspacioController {
         List<EspacioDTO> espacios = espacioService.obtenerEspaciosPorEstado(false);
         long fin = System.currentTimeMillis();
         logger.info("[ESPACIO] Fin obtenerEspaciosInactivos: {} (Duración: {} ms)", fin, (fin - inicio));
+        return ResponseEntity.ok(espacios);
+    }
+    //-------------------------------------
+    @GetMapping("/espaciosconbinados")
+    public ResponseEntity<List<EspacioDTO>> getEspaciosDisponibles(
+        @RequestParam(required = false) String facultad,
+        @RequestParam(required = false) String carrera,
+        @RequestParam(required = false) String categoria,
+        @RequestParam(required = false) Integer capacidad
+    ) {
+        List<EspacioDTO> espacios = espacioService.filtrarEspacios(facultad, carrera, categoria, capacidad);
         return ResponseEntity.ok(espacios);
     }
 }

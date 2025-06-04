@@ -5,9 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
@@ -15,6 +17,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -66,7 +69,7 @@ public class GlobalExceptionHandler {
         );
         
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
-    }
+    } //prueba
     
     // 3. Maneja errores de validación a nivel de parámetros (@RequestParam, @PathVariable)
     @ExceptionHandler(ConstraintViolationException.class)
@@ -208,10 +211,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
+
     public class RecursoNoDisponibleException extends RuntimeException {
         public RecursoNoDisponibleException(String mensaje) {
             super(mensaje);
         }
+    }
+
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiError> handleResponseStatusException(ResponseStatusException ex) {
+        ApiError apiError = new ApiError(
+            ex.getStatusCode().value(), // Código HTTP (ej. 409 Conflict)
+            "Error en la solicitud",
+            ex.getReason(), // Mensaje personalizado
+            LocalDateTime.now()
+        );
+        
+        return ResponseEntity.status(ex.getStatusCode()).body(apiError);
     }
 }
 

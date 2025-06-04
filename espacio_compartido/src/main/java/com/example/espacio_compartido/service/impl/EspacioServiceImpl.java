@@ -8,13 +8,14 @@ import com.example.espacio_compartido.validation.EspacioValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class EspacioServiceImpl implements IEspacioService {
-
+    //prueba
     private final EspacioRepository espacioRepository;
     private final CategoriaRepository categoriaRepository;
     private final EspacioValidator espacioValidator;
@@ -131,6 +132,17 @@ public class EspacioServiceImpl implements IEspacioService {
                 .capacidad(dto.getCapacidad())
                 .estado(dto.getEstado())
                 .build();
+    }
+
+    //---------------------------------------------
+    @Override
+    @Cacheable(value = "reservasFiltradas")
+    @Transactional(readOnly = true)
+    public List<EspacioDTO> filtrarEspacios(String facultad, String carrera, String categoria, Integer capacidad) {
+        List<Espacio> espacios = espacioRepository.filtrarEspacios(facultad, carrera, categoria, capacidad);
+        return espacios.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
     
 }
