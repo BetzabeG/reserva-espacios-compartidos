@@ -40,9 +40,10 @@ public class EspacioEquipamientoServiceImpl implements IEspacioEquipamientoServi
         Espacio espacio = espacioRepository.findById(espacioEquipamientoDTO.getIdEspacio())
                 .orElseThrow(() -> new RuntimeException("Espacio no encontrado con ID: " + espacioEquipamientoDTO.getIdEspacio()));
 
-        if (!espacio.getEstado()) { 
+        if (!espacio.getEstado()) {
             throw new RuntimeException("No se puede asociar equipamiento: El espacio con ID " + espacio.getIdEspacio() + " está inactivo.");
         }
+
         Equipamiento equipamiento = equipamientoRepository.findByIdEquipamientoAndEstadoETrue(espacioEquipamientoDTO.getIdEquipamiento())
                 .orElseThrow(() -> new RuntimeException("Equipamiento no encontrado o inactivo con ID: " + espacioEquipamientoDTO.getIdEquipamiento()));
 
@@ -56,6 +57,8 @@ public class EspacioEquipamientoServiceImpl implements IEspacioEquipamientoServi
         } else {
             espacioEquipamiento = EspacioEquipamiento.builder()
                     .id(id)
+                    .espacio(espacio)  //agregado
+                    .equipamiento(equipamiento)  //agregado
                     .cantidad(espacioEquipamientoDTO.getCantidad())
                     .build();
         }
