@@ -5,6 +5,7 @@ import com.example.espacio_compartido.model.Espacio;
 import java.util.List;
 
 public interface IEspacioService {
+    //prueba
     List<EspacioDTO> obtenerTodosLosEspacios();
     EspacioDTO obtenerEspacioPorId(Long id);
     EspacioDTO crearEspacio(EspacioDTO espacioDTO);

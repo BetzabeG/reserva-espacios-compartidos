@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 @Component
 public class ReservaValidator {
-
+//prueba
     private static final Pattern ESTADO_PATTERN = Pattern.compile("^(CONFIRMADA|PENDIENTE|CANCELADA)$");
     private static final int MOTIVO_MAX_LENGTH = 255;
     private static final LocalTime HORA_INICIO_PERMITIDA = LocalTime.of(8, 0);

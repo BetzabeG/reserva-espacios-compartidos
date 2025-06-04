@@ -35,7 +35,7 @@ public class ReservaServiceImpl implements IReservaService {
     private final ReservadorRepository reservadorRepository;
     private final EspacioRepository espacioRepository;
     private final ReservaValidator reservaValidator;
-
+    //prueba
     @Autowired
     public ReservaServiceImpl(ReservaRepository reservaRepository, ReservadorRepository reservadorRepository, EspacioRepository espacioRepository, ReservaValidator reservaValidator) {
         this.reservaRepository = reservaRepository;

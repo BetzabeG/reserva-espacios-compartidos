@@ -16,7 +16,7 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "reserva")
 public class Reserva {
-
+//prueba
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idReserva;

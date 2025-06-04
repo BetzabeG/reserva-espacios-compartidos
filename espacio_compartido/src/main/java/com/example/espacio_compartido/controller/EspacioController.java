@@ -22,7 +22,7 @@ import java.util.Map;
 @RequestMapping("/api/espacio")
 @Validated
 public class EspacioController {
-
+    //prueba
     private final IEspacioService espacioService;
     private static final Logger logger = LoggerFactory.getLogger(EspacioController.class);
 

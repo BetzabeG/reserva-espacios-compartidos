@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class HorarioDisponibilidadDTO implements Serializable {
+    //prueba
     private Long espacioId;
     private String nombreEspacio;
     private LocalDate fecha;

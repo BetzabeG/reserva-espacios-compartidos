@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
         );
         
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
-    }
+    } //prueba
     
     // 3. Maneja errores de validación a nivel de parámetros (@RequestParam, @PathVariable)
     @ExceptionHandler(ConstraintViolationException.class)

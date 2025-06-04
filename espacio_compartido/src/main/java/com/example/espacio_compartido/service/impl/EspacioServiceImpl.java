@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class EspacioServiceImpl implements IEspacioService {
-
+    //prueba
     private final EspacioRepository espacioRepository;
     private final CategoriaRepository categoriaRepository;
     private final EspacioValidator espacioValidator;

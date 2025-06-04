@@ -36,4 +36,5 @@ public interface EspacioRepository extends JpaRepository<Espacio, Long> {
         @Param("categoria") String categoria,
         @Param("capacidad") Integer capacidad
     );
+    //prueba
 }

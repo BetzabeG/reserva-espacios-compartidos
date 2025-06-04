@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "espacio")
 public class Espacio {
+    //prueba
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

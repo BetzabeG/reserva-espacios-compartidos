@@ -19,6 +19,8 @@ import jakarta.persistence.*;
 @Table(name = "reservador")
 @EqualsAndHashCode
 public class Reservador {
+//prueba
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

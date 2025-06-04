@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @AllArgsConstructor
 @Builder
 public class ReservaDTO  implements Serializable{
-
+    //prueba
     private Long idReserva;
 
     @NotNull(message = "El identificador del reservador es obligatorio")
