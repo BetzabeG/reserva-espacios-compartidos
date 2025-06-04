@@ -1,5 +1,6 @@
 package com.example.espacio_compartido.repository;
 
+import com.example.espacio_compartido.model.Espacio;
 import com.example.espacio_compartido.model.Reserva;
 
 import jakarta.persistence.LockModeType;
@@ -57,6 +58,31 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     //metodo para obetner reservar en base a un correo
     @Query("SELECT r FROM Reserva r JOIN r.reservador res ON r.reservador.id = res.id WHERE res.correoInstitucional = :correoReservador")
     List<Reserva> findByCorreoReservador(@Param("correoReservador") String correoReservador);
+
+
+    //---------------------
+    @Query("SELECT r FROM Reserva r " +
+        "JOIN r.espacio e " +
+        "JOIN e.categoria c " +
+        "WHERE (:facultad IS NULL OR e.facultad = :facultad) " +
+        "AND (:carrera IS NULL OR e.carrera = :carrera) " +
+        "AND (:categoria IS NULL OR c.nombre = :categoria) " +
+        "AND (:fecha IS NULL OR r.fechaReserva = :fecha) " +
+        "AND (:fechaInicio IS NULL OR :fechaFin IS NULL OR r.fechaReserva BETWEEN :fechaInicio AND :fechaFin)")
+    List<Reserva> filtrarReservas(
+            @Param("facultad") String facultad,
+            @Param("carrera") String carrera,
+            @Param("categoria") String categoria,
+            @Param("fecha") LocalDate fecha,
+            @Param("fechaInicio") LocalDate fechaInicio,
+            @Param("fechaFin") LocalDate fechaFin
+    );
+
+    List<Reserva> findByEspacioAndEstadoEAndFechaReservaBetween(
+        Espacio espacio, String estadoE, LocalDate fechaInicio, LocalDate fechaFin
+    );
+
+    List<Reserva> findByEspacioAndFechaReservaOrderByHoraInicioAsc(Espacio espacio, LocalDate fechaReserva);
 
 
 

@@ -1,5 +1,6 @@
 package com.example.espacio_compartido.controller;
 
+import com.example.espacio_compartido.dto.HorarioDisponibilidadDTO;
 import com.example.espacio_compartido.dto.ReservaDTO;
 import com.example.espacio_compartido.service.IReservaService;
 
@@ -51,6 +52,7 @@ public class ReservaController {
         
         return ResponseEntity.ok(reserva);
     }
+    
     @GetMapping("/filtrar")
     public ResponseEntity<List<ReservaDTO>> obtenerReservasPorEstado(@RequestParam String estado) {
         long inicio = System.currentTimeMillis();
@@ -119,6 +121,59 @@ public class ReservaController {
         long fin = System.currentTimeMillis();
         logger.info("[CACHE] Fin obtenerReservasPorCorreo (Correo: {}): {} (Duración: {} ms)", correoReservador, fin, (fin - inicio));
 
+        return ResponseEntity.ok(reservas);
+    }
+    //-----------------
+    @GetMapping("/horariosdisponibles")
+    public ResponseEntity<HorarioDisponibilidadDTO> obtenerHorariosDisponibles(
+            @RequestParam Long espacioId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+
+        long inicio = System.currentTimeMillis();
+        logger.info("[RESERVA] Inicio obtenerHorariosDisponibles para espacioId: {} y fecha: {}", espacioId, fecha);
+
+        HorarioDisponibilidadDTO disponibilidad = reservaService.obtenerHorariosDisponibles(espacioId, fecha);
+
+        long fin = System.currentTimeMillis();
+        logger.info("[RESERVA] Fin obtenerHorariosDisponibles: Duración {} ms", (fin - inicio));
+
+        return ResponseEntity.ok(disponibilidad);
+    }
+
+
+    @GetMapping("/espacio/{espacioId}/reservasporrango")
+    public ResponseEntity<List<ReservaDTO>> obtenerReservasPorEspacioYRangoFechas(
+        @PathVariable Long espacioId,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+
+        long inicio = System.currentTimeMillis();
+        logger.info("[RESERVA] Inicio obtenerReservasPorEspacioYRangoFechas para espacioId: {} entre {} y {}", espacioId, fechaInicio, fechaFin);
+        
+        List<ReservaDTO> reservas = reservaService.obtenerReservasPorEspacioYRangoFechas(espacioId, fechaInicio, fechaFin);
+        
+        long fin = System.currentTimeMillis();
+        logger.info("[RESERVA] Fin obtenerReservasPorEspacioYRangoFechas: {} (Duracion: {} ms)", fin, (fin - inicio));
+        
+        return ResponseEntity.ok(reservas);
+    }
+
+
+    @GetMapping("/api/reserva/filtrocombinado")
+    public ResponseEntity<List<ReservaDTO>> filtrarReservas(
+            @RequestParam(required = false) String facultad,
+            @RequestParam(required = false) String carrera,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) String rango
+    ) {
+        long inicio = System.currentTimeMillis();
+        logger.info("[RESERVA] Inicio filtrarReservas");
+
+        List<ReservaDTO> reservas = reservaService.filtrarReservas(facultad, carrera, categoria, fecha, rango);
+
+        long fin = System.currentTimeMillis();
+        logger.info("[RESERVA] Fin filtrarReservas: {} ms", (fin - inicio));
         return ResponseEntity.ok(reservas);
     }
 }

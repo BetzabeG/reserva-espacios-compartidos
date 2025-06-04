@@ -76,7 +76,6 @@ public interface IReservaService {
      */
     List<ReservaDTO> obtenerReservasPorCorreo(String nombreReservador);
 
-
     /**
      * Obtiene las reservas de un espacio dentro de un rango de fechas.
      * @param espacioId ID del espacio.
@@ -98,28 +97,16 @@ public interface IReservaService {
     HorarioDisponibilidadDTO obtenerHorariosDisponibles(Long espacioId, LocalDate fecha); 
 
     /**
-     * Filtra reservas aplicando una combinación de filtros opcionales:
-     * - facultadId: ID de la facultad
-     * - carreraId: ID de la carrera
-     * - categoria: categoría del espacio (ej. cancha, laboratorio)
-     * - fecha: fecha específica
-     * - rango: periodo relativo: 7dias, 1semana, 1mes, año
-     *
-     * Los filtros pueden usarse de forma combinada.
-     *
-     * @param facultadId ID de la facultad (opcional)
-     * @param carreraId ID de la carrera (opcional)
-     * @param categoria Categoría del recurso (opcional)
-     * @param fecha Fecha específica (opcional)
-     * @param rango Periodo relativo: 7dias, 1semana, 1mes, año (opcional)
-     * @return Lista de reservas filtradas.
+     * Filtra reservas por facultad, carrera, categoría, fecha exacta o rango.
+     * Todos los filtros son opcionales y combinables.
+     * 
+     * @param facultad Nombre de la facultad.
+     * @param carrera Nombre de la carrera.
+     * @param categoria Nombre de la categoría.
+     * @param fecha Fecha exacta (opcional si se usa rango).
+     * @param rango "HOY", "SEMANA", "MES", etc.
+     * @return Lista de ReservaDTO con las reservas que coinciden.
      */
-    List<ReservaDTO> filtrarReservas(Long facultadId,Long carreraId,String categoria,LocalDate fecha,String rango); //SARA
-
-    //metodos futuios  -> 
-    // get resevar por facultad 
-    // get  reserva por id carrea y idfaculyad
-    // get  reserva por id carrer id facultad y id espacio
-    // calendario 
+    List<ReservaDTO> filtrarReservas(String facultad, String carrera, String categoria, LocalDate fecha, String rango);
 
 }

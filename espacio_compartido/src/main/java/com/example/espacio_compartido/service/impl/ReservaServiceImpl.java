@@ -23,6 +23,8 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.CacheEvict;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -168,22 +170,99 @@ public class ReservaServiceImpl implements IReservaService {
         
         return null;
     }
+    //---------------------------------------
 
     @Override
     public List<ReservaDTO> obtenerReservasPorEspacioYRangoFechas(Long espacioId, LocalDate fechaInicio, LocalDate fechaFin) {
-        // Implementación futura
-        return null;
+        Espacio espacio = espacioRepository.findById(espacioId)
+                .orElseThrow(() -> new RuntimeException("Espacio no encontrado con ID: " + espacioId));
+
+        List<Reserva> reservas = reservaRepository.findByEspacioAndEstadoEAndFechaReservaBetween(
+            espacio, "CONFIRMADA", fechaInicio, fechaFin
+        );
+
+        return reservas.stream()
+                .map(this::convertirAReservaDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public HorarioDisponibilidadDTO obtenerHorariosDisponibles(Long espacioId, LocalDate fecha) {
-        // Implementación futura
-        return null;
+        Espacio espacio = espacioRepository.findById(espacioId)
+                .orElseThrow(() -> new RuntimeException("Espacio no encontrado con ID: " + espacioId));
+
+        LocalTime horaApertura = LocalTime.of(8, 0); // 08:00 AM
+        LocalTime horaCierre = LocalTime.of(22, 0);  // 10:00 PM
+
+        List<LocalTime> horasDisponibles = new ArrayList<>();
+        List<LocalTime> horasOcupadas = new ArrayList<>();
+
+        List<Reserva> reservasDelDia = reservaRepository.findByEspacioAndFechaReservaOrderByHoraInicioAsc(espacio, fecha)
+                .stream()
+                .filter(r -> r.getEstadoE().equalsIgnoreCase("CONFIRMADA"))
+                .collect(Collectors.toList());
+
+        for (LocalTime hora = horaApertura; hora.isBefore(horaCierre); hora = hora.plusHours(1)) {
+            LocalTime siguienteHora = hora.plusHours(1);
+            boolean ocupada = false;
+
+            for (Reserva reserva : reservasDelDia) {
+                if ((hora.isAfter(reserva.getHoraInicio().minusMinutes(1)) && hora.isBefore(reserva.getHoraFin())) ||
+                    (siguienteHora.isAfter(reserva.getHoraInicio()) && siguienteHora.isBefore(reserva.getHoraFin().plusMinutes(1))) ||
+                    (hora.equals(reserva.getHoraInicio()) && siguienteHora.equals(reserva.getHoraFin()))) {
+                    ocupada = true;
+                    break;
+                }
+            }
+
+            if (ocupada) {
+                horasOcupadas.add(hora);
+            } else {
+                horasDisponibles.add(hora);
+            }
+        }
+
+        return HorarioDisponibilidadDTO.builder()
+                .fecha(fecha)
+                .espacioId(espacioId)
+                .horasDisponibles(horasDisponibles)
+                .horasOcupadas(horasOcupadas)
+                .build();
     }
+
+    //implemnejszjdg
     @Override
-    public List<ReservaDTO> filtrarReservas(Long facultadId, Long carreraId, String categoria, LocalDate fecha, String rango) {
-        // Implementación futura
-        return null;
+    @Cacheable(value = "reservasFiltradas")
+    @Transactional(readOnly = true)
+    public List<ReservaDTO> filtrarReservas(String facultad, String carrera, String categoria, LocalDate fecha, String rango) {
+        LocalDate fechaInicio = null;
+        LocalDate fechaFin = null;
+
+        if (rango != null) {
+            LocalDate hoy = LocalDate.now();
+            switch (rango.toUpperCase()) {
+                case "HOY":
+                    fechaInicio = hoy;
+                    fechaFin = hoy;
+                    break;
+                case "SEMANA":
+                    fechaInicio = hoy;
+                    fechaFin = hoy.plusDays(7);
+                    break;
+                case "MES":
+                    fechaInicio = hoy.withDayOfMonth(1);
+                    fechaFin = hoy.withDayOfMonth(hoy.lengthOfMonth());
+                    break;
+                default:
+                    throw new IllegalArgumentException("Rango no reconocido: " + rango);
+            }
+        }
+
+        List<Reserva> reservas = reservaRepository.filtrarReservas(facultad, carrera, categoria, fecha, fechaInicio, fechaFin);
+
+        return reservas.stream()
+                .map(this::convertirAReservaDTO)
+                .collect(Collectors.toList());
     }
 
     private ReservaDTO convertirAReservaDTO(Reserva reserva) {

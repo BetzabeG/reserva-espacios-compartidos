@@ -149,4 +149,15 @@ public class EspacioController {
         logger.info("[ESPACIO] Fin obtenerEspaciosInactivos: {} (Duración: {} ms)", fin, (fin - inicio));
         return ResponseEntity.ok(espacios);
     }
+    //-------------------------------------
+    @GetMapping("/espaciosconbinados")
+    public ResponseEntity<List<EspacioDTO>> getEspaciosDisponibles(
+        @RequestParam(required = false) String facultad,
+        @RequestParam(required = false) String carrera,
+        @RequestParam(required = false) String categoria,
+        @RequestParam(required = false) Integer capacidad
+    ) {
+        List<EspacioDTO> espacios = espacioService.filtrarEspacios(facultad, carrera, categoria, capacidad);
+        return ResponseEntity.ok(espacios);
+    }
 }
