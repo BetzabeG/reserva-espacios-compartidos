@@ -6,6 +6,7 @@ import jakarta.persistence.LockModeType;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.query.Param;
@@ -41,6 +42,23 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
      */
     @Query("SELECT COUNT(r) > 0 FROM Reserva r WHERE r.espacio.idEspacio = :idEspacio AND r.fechaReserva = :fechaReserva AND r.horaInicio = :horaInicio")
     boolean existeReserva(@Param("idEspacio") Long idEspacio, @Param("fechaReserva") LocalDate fechaReserva, @Param("horaInicio") LocalTime horaInicio);
+
+    @Modifying
+    @Query("DELETE FROM Reserva r WHERE r.espacio.idEspacio = :idEspacio")
+    void eliminarReservasPorEspacio(@Param("idEspacio") Long idEspacio);
+
+    @Query("SELECT r FROM Reserva r WHERE r.espacio.idEspacio = :espacioId AND r.fechaReserva = :fechaReserva")
+    List<Reserva> findByEspacioIdAndFechaReserva(@Param("espacioId") Long espacioId, @Param("fechaReserva") LocalDate fechaReserva);
+
+    //metodo para encontrar las reserva de un idreservador
+    @Query("SELECT r FROM Reserva r WHERE r.reservador.id = :idReservador")
+    List<Reserva> findByIdReservador(@Param("idReservador") Long idReservador);
+
+    //metodo para obetner reservar en base a un correo
+    @Query("SELECT r FROM Reserva r JOIN r.reservador res ON r.reservador.id = res.id WHERE res.correoInstitucional = :correoReservador")
+    List<Reserva> findByCorreoReservador(@Param("correoReservador") String correoReservador);
+
+
 
 
 

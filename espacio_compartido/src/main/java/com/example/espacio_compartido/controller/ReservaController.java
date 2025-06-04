@@ -5,6 +5,7 @@ import com.example.espacio_compartido.service.IReservaService;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jakarta.validation.Valid;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -72,7 +74,7 @@ public class ReservaController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
     }
-    
+
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
         logger.info("[CACHE] Eliminando reserva con ID: " + id);
@@ -81,11 +83,42 @@ public class ReservaController {
 
         logger.info("[CACHE] Reserva eliminada con éxito! Caché de reservas por estado y lista general eliminada.");
 
-        return ResponseEntity.noContent().build(); // Código 204: Eliminación exitosa
+        return ResponseEntity.noContent().build(); 
     }
+    @GetMapping("espacioyfecha/{espacioId}/{fecha}")
+    public ResponseEntity<List<ReservaDTO>> obtenerReservasPorEspacioYFecha(
+            @PathVariable Long espacioId, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        
+        logger.info("[CACHE] Consultando reservas para el espacio ID: " + espacioId + " en la fecha: " + fecha);
+        
+        List<ReservaDTO> reservas = reservaService.obtenerReservasPorEspacioYFecha(espacioId, fecha);
+        
+        logger.info("[CACHE] Consulta completada! Se encontraron " + reservas.size() + " reservas.");
+        
+        return ResponseEntity.ok(reservas);
+    }
+    @GetMapping("reservador/{idReservador}")
+    public ResponseEntity<List<ReservaDTO>> obtenerReservasPorIdReservador(@PathVariable Long idReservador) {
+        long inicio = System.currentTimeMillis();
+        logger.info("[RESERVA] Inicio obtenerReservasPorIdReservador (ID: {}): {}", idReservador, inicio);
+        
+        List<ReservaDTO> reservas = reservaService.obtenerReservasPorIdReservador(idReservador);
+        
+        long fin = System.currentTimeMillis();
+        logger.info("[RESERVA] Fin obtenerReservasPorIdReservador (ID: {}): {} (Duración: {} ms)", idReservador, fin, (fin - inicio));
+        
+        return ResponseEntity.ok(reservas);
+    }
+    @GetMapping("correo/{correoReservador}")
+    public ResponseEntity<List<ReservaDTO>> obtenerReservasPorCorreo(@PathVariable String correoReservador) {
+        long inicio = System.currentTimeMillis();
+        logger.info("[CACHE] Inicio obtenerReservasPorCorreo (Correo: {}): {}", correoReservador, inicio);
 
+        List<ReservaDTO> reservas = reservaService.obtenerReservasPorCorreo(correoReservador);
 
+        long fin = System.currentTimeMillis();
+        logger.info("[CACHE] Fin obtenerReservasPorCorreo (Correo: {}): {} (Duración: {} ms)", correoReservador, fin, (fin - inicio));
 
-
-
+        return ResponseEntity.ok(reservas);
+    }
 }

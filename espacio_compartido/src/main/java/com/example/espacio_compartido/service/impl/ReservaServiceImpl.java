@@ -108,12 +108,6 @@ public class ReservaServiceImpl implements IReservaService {
 
     @Override
     @Transactional
-    public ReservaDTO modificarReserva(Long id, ReservaDTO reservaDTO) {
-        
-        return null;
-    }
-    @Override
-    @Transactional
     @CacheEvict(value = {"reservasPorEstado", "todasLasReservas"}, allEntries = true)
     public void eliminarReserva(Long id) {
         Reserva reserva = reservaRepository.findById(id)
@@ -122,31 +116,56 @@ public class ReservaServiceImpl implements IReservaService {
         reservaRepository.delete(reserva);
     }
     @Override
-    public List<ReservaDTO> obtenerReservasPorEspacioYFecha(Long espacioId, LocalDate fecha) {
-        // Implementación futura
-        return null;
+    @Transactional
+    @Cacheable(value = "reservasPorEspacioYFecha", key = "#espacioId + '-' + #fechaReserva")
+    public List<ReservaDTO> obtenerReservasPorEspacioYFecha(Long espacioId, LocalDate fechaReserva) {
+        if (!espacioRepository.existsById(espacioId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El espacio con ID " + espacioId + " no existe.");
+        }
+        reservaValidator.validaFechaReserva(fechaReserva);
+
+        List<Reserva> reservas = reservaRepository.findByEspacioIdAndFechaReserva(espacioId, fechaReserva);
+        return reservas.stream()
+                    .map(this::convertirAReservaDTO)
+                    .collect(Collectors.toList());
     }
     @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "reservasPorReservador", key = "#idReservador")
     public List<ReservaDTO> obtenerReservasPorIdReservador(Long idReservador) {
-        // Implementación futura
-        return null;
+        if (idReservador == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El ID de reservador no puede ser nulo.");
+        }
+
+        boolean existeReservador = reservadorRepository.existsById(idReservador);
+        if (!existeReservador) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El reservador con ID " + idReservador + " no existe.");
+        }
+
+        List<Reserva> reservas = reservaRepository.findByIdReservador(idReservador);
+        
+        return reservas.stream()
+                    .map(this::convertirAReservaDTO)
+                    .collect(Collectors.toList());
     }
 
     @Override
-    public List<ReservaDTO> obtenerReservasPorNombreReservador(String nombreReservador) {
-        // Implementación futura
-        return null;
-    }
+    @Transactional(readOnly = true)
+    @Cacheable(value = "reservasPorCorreoReservador", key = "#correoReservador")
+    public List<ReservaDTO> obtenerReservasPorCorreo(String correoReservador) {
 
-    @Override
-    public List<ReservaDTO> obtenerReservasPorFacultad(String facultad) {
-        // Implementación futura
-        return null;
-    }
+        reservaValidator.validaCorreoReservador(correoReservador);
 
+        List<Reserva> reservas = reservaRepository.findByCorreoReservador(correoReservador);
+
+        return reservas.stream()
+                    .map(this::convertirAReservaDTO)
+                    .collect(Collectors.toList());
+    }
     @Override
-    public List<ReservaDTO> obtenerReservasPorCarrera(String carrera) {
-        // Implementación futura
+    @Transactional
+    public ReservaDTO modificarReserva(Long id, ReservaDTO reservaDTO) {
+        
         return null;
     }
 
@@ -166,7 +185,6 @@ public class ReservaServiceImpl implements IReservaService {
         // Implementación futura
         return null;
     }
-
 
     private ReservaDTO convertirAReservaDTO(Reserva reserva) {
         return ReservaDTO.builder()

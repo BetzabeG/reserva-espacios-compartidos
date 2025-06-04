@@ -74,21 +74,8 @@ public interface IReservaService {
      * @param nombreReservador Nombre del reservador.
      * @return Lista de ReservaDTO.
      */
-    List<ReservaDTO> obtenerReservasPorNombreReservador(String nombreReservador);
+    List<ReservaDTO> obtenerReservasPorCorreo(String nombreReservador);
 
-    /**
-     * Obtiene las reservas por facultad.
-     * @param facultad Nombre de la facultad.
-     * @return Lista de ReservaDTO.
-     */
-    List<ReservaDTO> obtenerReservasPorFacultad(String facultad);
-
-    /**
-     * Obtiene las reservas por carrera.
-     * @param carrera Nombre de la carrera.
-     * @return Lista de ReservaDTO.
-     */
-    List<ReservaDTO> obtenerReservasPorCarrera(String carrera);
 
     /**
      * Obtiene las reservas de un espacio dentro de un rango de fechas.

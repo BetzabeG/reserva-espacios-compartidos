@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.espacio_compartido.dto.ReservaDTO;
+
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.regex.Pattern;
@@ -23,15 +25,27 @@ public class ReservaValidator {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de creación no puede ser en el futuro.");
         }
     }
-
     public void validaFechaReserva(LocalDate fechaReserva) {
-        if (fechaReserva == null || fechaReserva.isBefore(LocalDate.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de reserva debe ser hoy o en el futuro.");
+        if (fechaReserva == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha no puede ser nula.");
+        }
+        if (fechaReserva.getYear() < 2025) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El año de la reserva debe ser 2025 o posterior.");
         }
         if (fechaReserva.isAfter(LIMITE_FUTURO)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No puedes reservar espacios con más de un año de anticipación.");
         }
+        if (fechaReserva.isAfter(LocalDate.of(2100, 1, 1))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha ingresada no es válida.");
+        }
+        try {
+            fechaReserva.getMonthValue();
+            fechaReserva.getDayOfMonth();
+        } catch (DateTimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha ingresada tiene un mes o día inválido.");
+        }
     }
+
 
     public void validaHoras(LocalTime horaInicio, LocalTime horaFin) {
         if (horaInicio == null || horaFin == null) {
@@ -54,7 +68,7 @@ public class ReservaValidator {
 
     public void validaEstado(String estadoE) {
         if (estadoE == null || !ESTADO_PATTERN.matcher(estadoE).matches()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado no válido. Debe ser uno de: PENDIENTE, CONFIRMADA, CANCELADA, FINALIZADA.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado no válido. Debe ser uno de: PENDIENTE, CONFIRMADA, CANCELADA");
         }
     }
 
@@ -67,6 +81,19 @@ public class ReservaValidator {
         }
         if (motivo.matches("^(.)\\1{5,}$")) { 
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El motivo no puede ser solo caracteres repetidos.");
+        }
+    }
+    public void validaCorreoReservador(String correoReservador) {
+        if (correoReservador == null || correoReservador.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El correo del reservador no puede estar vacío.");
+        }
+
+        if (correoReservador.length() < 5 || correoReservador.length() > 100) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El correo debe tener entre 5 y 100 caracteres.");
+        }
+
+        if (!correoReservador.matches("^[A-Za-z0-9._%+-]+@umsa\\.bo$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El correo debe pertenecer al dominio @umsa.bo.");
         }
     }
 
