@@ -30,8 +30,10 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
      */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT r FROM Reserva r WHERE r.idReserva = :id")
-    Optional<Reserva> findByIdWithLock(@Param("idReserva") Long id);
-        /**
+    Optional<Reserva> findByIdWithLock(@Param("id") Long id);
+    
+    
+    /**
      * Obtiene reservas filtradas por estado
      * @param estado Estado de la reserva (ej. "CONFIRMADA", "CANCELADA").
      * @return Lista de reservas con el estado especificado.

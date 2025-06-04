@@ -81,7 +81,7 @@ public class ReservaServiceImpl implements IReservaService {
     }
 
     @Transactional
-    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas"}, allEntries = true) // Limpia caché desactualizado
+    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas","reservasPorEspacioYFecha","reservasPorReservador","reservasPorCorreoReservador","reservasFiltradas"}, allEntries = true) // Limpia caché desactualizado
     public ReservaDTO crearReserva(ReservaDTO reservaDTO) {
         reservaDTO.setFechaCreacion(LocalDate.now());
         reservaValidator.validacionCompletaReserva(reservaDTO);
@@ -110,7 +110,7 @@ public class ReservaServiceImpl implements IReservaService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas"}, allEntries = true)
+    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas","reservasPorEspacioYFecha","reservasPorReservador","reservasPorCorreoReservador","reservasFiltradas"}, allEntries = true)
     public void eliminarReserva(Long id) {
         Reserva reserva = reservaRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La reserva con ID " + id + " no existe."));
