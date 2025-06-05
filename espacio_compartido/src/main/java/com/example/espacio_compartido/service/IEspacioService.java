@@ -29,6 +29,14 @@ public interface IEspacioService {
      * @return Lista de ReservaDTO con las reservas que coinciden.
      */
    
-    List<EspacioDTO> filtrarEspacios(String facultad, String carrera, String categoria, Integer capacidad);        
+    List<EspacioDTO> filtrarEspacios(String facultad, String carrera, String categoria, Integer capacidad);    
+    /**
+     * Obtiene todas las capacidades únicas disponibles en los espacios.
+     * Útil para filtros y estadísticas.
+     * 
+     * @return Lista de números representando las capacidades distintas.
+     */
+    List<Integer> obtenerCapacidadesDisponibles();
+    
     
 }

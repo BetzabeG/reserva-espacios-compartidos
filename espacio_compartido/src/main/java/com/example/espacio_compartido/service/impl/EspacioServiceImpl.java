@@ -144,5 +144,11 @@ public class EspacioServiceImpl implements IEspacioService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+    //--------------------------------------------
+    @Override
+    public List<Integer> obtenerCapacidadesDisponibles() {
+        return espacioRepository.obtenerCapacidadesUnicas();
+    }
+
     
 }

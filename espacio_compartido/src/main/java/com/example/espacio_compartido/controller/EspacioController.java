@@ -160,4 +160,10 @@ public class EspacioController {
         List<EspacioDTO> espacios = espacioService.filtrarEspacios(facultad, carrera, categoria, capacidad);
         return ResponseEntity.ok(espacios);
     }
+    @GetMapping("/capacidades")
+    public ResponseEntity<List<Integer>> obtenerCapacidades() {
+        List<Integer> capacidades = espacioService.obtenerCapacidadesDisponibles();
+        return ResponseEntity.ok(capacidades);
+    }
+
 }

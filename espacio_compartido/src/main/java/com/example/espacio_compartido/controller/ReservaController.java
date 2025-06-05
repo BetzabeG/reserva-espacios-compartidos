@@ -29,7 +29,7 @@ public class ReservaController {
         this.reservaService = reservaService;
     }
 
-    @GetMapping
+    @GetMapping //listo
     public ResponseEntity<List<ReservaDTO>> obtenerTodasLasReservas() {
         long inicio = System.currentTimeMillis();
         logger.info("[RESERVA] Inicio obtenerTodasLasReservas: {}", inicio);
@@ -40,7 +40,7 @@ public class ReservaController {
         logger.info("[RESERVA] Fin obtenerTodasLasReservas: {} (Duración: {} ms)", fin, (fin - inicio));
         return ResponseEntity.ok(reservas);
     }
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") //listo
     public ResponseEntity<ReservaDTO> obtenerReservaPorId(@PathVariable Long id) {
         long inicio = System.currentTimeMillis();
         logger.info("[RESERVA] Inicio obtenerReservaPorId: {}", inicio);
@@ -53,7 +53,7 @@ public class ReservaController {
         return ResponseEntity.ok(reserva);
     }
     
-    @GetMapping("/filtrar")
+    @GetMapping("/filtrar") //listo
     public ResponseEntity<List<ReservaDTO>> obtenerReservasPorEstado(@RequestParam String estado) {
         long inicio = System.currentTimeMillis();
         logger.info("[RESERVA] Inicio obtenerReservasPorEstado: Estado solicitado: {}", estado);
@@ -66,7 +66,7 @@ public class ReservaController {
         return ResponseEntity.ok(reservas);
     }
 
-    @PostMapping("/crear")
+    @PostMapping("/crear") //listo
     public ResponseEntity<ReservaDTO> crearReserva(@RequestBody @Valid ReservaDTO reservaDTO) {
         logger.info("[CACHE] Creando nueva reserva... Eliminando caché antigua.");
 
@@ -77,7 +77,7 @@ public class ReservaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
     }
 
-    @DeleteMapping("/eliminar/{id}")
+    @DeleteMapping("/eliminar/{id}") //listo
     public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
         logger.info("[CACHE] Eliminando reserva con ID: " + id);
 
@@ -87,7 +87,7 @@ public class ReservaController {
 
         return ResponseEntity.noContent().build(); 
     }
-    @GetMapping("espacioyfecha/{espacioId}/{fecha}")
+    @GetMapping("espacioyfecha/{espacioId}/{fecha}") //listo
     public ResponseEntity<List<ReservaDTO>> obtenerReservasPorEspacioYFecha(
             @PathVariable Long espacioId, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
         
@@ -99,7 +99,7 @@ public class ReservaController {
         
         return ResponseEntity.ok(reservas);
     }
-    @GetMapping("reservador/{idReservador}")
+    @GetMapping("reservador/{idReservador}") //listo
     public ResponseEntity<List<ReservaDTO>> obtenerReservasPorIdReservador(@PathVariable Long idReservador) {
         long inicio = System.currentTimeMillis();
         logger.info("[RESERVA] Inicio obtenerReservasPorIdReservador (ID: {}): {}", idReservador, inicio);
@@ -111,7 +111,7 @@ public class ReservaController {
         
         return ResponseEntity.ok(reservas);
     }
-    @GetMapping("correo/{correoReservador}")
+    @GetMapping("correo/{correoReservador}") //listo
     public ResponseEntity<List<ReservaDTO>> obtenerReservasPorCorreo(@PathVariable String correoReservador) {
         long inicio = System.currentTimeMillis();
         logger.info("[CACHE] Inicio obtenerReservasPorCorreo (Correo: {}): {}", correoReservador, inicio);
@@ -124,7 +124,7 @@ public class ReservaController {
         return ResponseEntity.ok(reservas);
     }
     //-----------------
-    @GetMapping("/horariosdisponibles")
+    @GetMapping("/horariosdisponibles") //listo
     public ResponseEntity<HorarioDisponibilidadDTO> obtenerHorariosDisponibles(
             @RequestParam Long espacioId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
@@ -141,7 +141,7 @@ public class ReservaController {
     }
 
 
-    @GetMapping("/espacio/{espacioId}/reservasporrango")
+    @GetMapping("/espacio/{espacioId}/reservasporrango") //listo
     public ResponseEntity<List<ReservaDTO>> obtenerReservasPorEspacioYRangoFechas(
         @PathVariable Long espacioId,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
