@@ -2,12 +2,24 @@ package com.example.espacio_compartido.controller;
 
 import com.example.espacio_compartido.dto.EspacioEquipamientoDTO;
 import com.example.espacio_compartido.service.IEspacioEquipamientoService;
+
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+<<<<<<< Updated upstream
+=======
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+>>>>>>> Stashed changes
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +38,7 @@ public class EspacioEquipamientoController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<EspacioEquipamientoDTO> asociarEquipamientoAEspacio(
             @Valid @RequestBody EspacioEquipamientoDTO espacioEquipamientoDTO) {
         logger.info("[ESPACIO-EQUIPAMIENTO] Solicitud para asociar/actualizar equipamiento ID {} a espacio ID {} con cantidad {}.",
@@ -48,6 +61,7 @@ public class EspacioEquipamientoController {
     }
 
     @DeleteMapping("/{idEspacio}/{idEquipamiento}")
+    @Transactional
     @ResponseStatus(HttpStatus.NO_CONTENT) 
     public ResponseEntity<Void> desasociarEquipamientoDeEspacio(
             @PathVariable Long idEspacio,
@@ -59,6 +73,73 @@ public class EspacioEquipamientoController {
         return ResponseEntity.noContent().build();
     }
 
+<<<<<<< Updated upstream
     // El endpoint para LISTAR todo el equipamiento de un espacio iría en EspacioController:
     // @GetMapping("/{idEspacio}/equipamiento") en EspacioController
+=======
+    @PutMapping("/{idEspacio}/{idEquipamiento}")
+    @Transactional
+    public ResponseEntity<EspacioEquipamientoDTO> actualizarCantidadEquipamientoEnEspacio(
+            @PathVariable Long idEspacio, 
+            @PathVariable Long idEquipamiento, 
+            @RequestParam Integer cantidad) { 
+        logger.info("[ESPACIO-EQUIPAMIENTO] Solicitud para actualizar cantidad a {} para asociación espacio ID {} - equipamiento ID {}.",
+                cantidad, idEspacio, idEquipamiento);
+        EspacioEquipamientoDTO updatedAssociation = espacioEquipamientoService.actualizarCantidadEquipamientoEnEspacio(idEspacio, idEquipamiento, cantidad);
+        logger.info("[ESPACIO-EQUIPAMIENTO] Cantidad actualizada exitosamente para la asociación espacio ID {} - equipamiento ID {}.",
+                idEspacio, idEquipamiento);
+        return ResponseEntity.ok(updatedAssociation);
+    }
+
+
+
+    @GetMapping("/{idEspacio}/equipamientos")
+    public ResponseEntity<List<EspacioEquipamientoDTO>> obtenerEquipamientosPorEspacio(@PathVariable Long idEspacio) {
+        List<EspacioEquipamientoDTO> lista = espacioEquipamientoService.obtenerEquipamientosPorIdEspacio(idEspacio);
+        return ResponseEntity.ok(lista);
+    }
+
+
+    @GetMapping("/por-espacio/{idEspacio}")
+    public ResponseEntity<List<Map<String, Object>>> listarPorIdEspacio(@PathVariable Long idEspacio) {
+        List<EspacioEquipamiento> lista = espacioEquipamientoService.listarPorIdEspacio(idEspacio);
+
+        List<Map<String, Object>> response = new ArrayList<>();
+        for (EspacioEquipamiento ee : lista) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            
+            // Detalle Espacio
+            item.put("idEspacio", ee.getEspacio().getIdEspacio());
+            item.put("descripcion", ee.getEspacio().getDescripcion());
+            
+            Map<String, Object> categoriaMap = new LinkedHashMap<>();
+            categoriaMap.put("idCategoria", ee.getEspacio().getCategoria().getIdCategoria());
+            categoriaMap.put("nombre", ee.getEspacio().getCategoria().getNombre());
+            categoriaMap.put("descripcion", ee.getEspacio().getCategoria().getDescripcion());
+            item.put("categoria", categoriaMap);
+            
+            item.put("facultad", ee.getEspacio().getFacultad());
+            item.put("carrera", ee.getEspacio().getCarrera());
+            item.put("ubicacion", ee.getEspacio().getUbicacion());
+            item.put("capacidad", ee.getEspacio().getCapacidad());
+            item.put("estado", ee.getEspacio().getEstado());
+
+            // Detalle Equipamiento
+            Map<String, Object> equipamientoMap = new LinkedHashMap<>();
+            equipamientoMap.put("idEquipamiento", ee.getEquipamiento().getIdEquipamiento());
+            equipamientoMap.put("nombre", ee.getEquipamiento().getNombre());
+            equipamientoMap.put("descripcion", ee.getEquipamiento().getDescripcion());
+            equipamientoMap.put("estado", ee.getEquipamiento().getEstadoE());
+            item.put("equipamiento", equipamientoMap);
+
+            // Cantidad
+            item.put("cantidad", ee.getCantidad());
+
+            response.add(item);
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+>>>>>>> Stashed changes
 }

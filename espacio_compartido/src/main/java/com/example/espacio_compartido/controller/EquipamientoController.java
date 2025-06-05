@@ -2,6 +2,8 @@ package com.example.espacio_compartido.controller;
 
 import com.example.espacio_compartido.dto.EquipamientoDTO;
 import com.example.espacio_compartido.service.IEquipamientoService;
+
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,6 +45,7 @@ public class EquipamientoController {
     }
 
     @PostMapping
+    @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<EquipamientoDTO> crearEquipamiento(@Valid @RequestBody EquipamientoDTO equipamientoDTO) {
         logger.info("[EQUIPAMIENTO] Solicitud para crear nuevo equipamiento: {}", equipamientoDTO.getNombre());
@@ -52,6 +55,7 @@ public class EquipamientoController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<EquipamientoDTO> actualizarEquipamiento(
             @PathVariable Long id,
             @Valid @RequestBody EquipamientoDTO equipamientoDTO) {
@@ -62,10 +66,13 @@ public class EquipamientoController {
     }
 
     @PutMapping("/{id}/baja")
+    @Transactional
     public ResponseEntity<EquipamientoDTO> eliminarEquipamiento(@PathVariable Long id) {
         logger.info("[EQUIPAMIENTO] Solicitud para eliminar lógicamente equipamiento con ID: {}", id);
         EquipamientoDTO equipamientoEliminado = equipamientoService.eliminarEquipamiento(id);
         logger.info("[EQUIPAMIENTO] Equipamiento con ID {} eliminado lógicamente.", id);
         return ResponseEntity.ok(equipamientoEliminado);
     }
+
+    
 }

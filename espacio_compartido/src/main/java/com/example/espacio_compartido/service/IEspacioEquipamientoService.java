@@ -12,4 +12,13 @@ public interface IEspacioEquipamientoService {
     List<EspacioEquipamientoDTO> obtenerEquipamientosPorIdEspacio(Long idEspacio); 
 
     void desasociarEquipamientoDeEspacio(Long idEspacio, Long idEquipamiento);
+<<<<<<< Updated upstream
 }
+=======
+
+    EspacioEquipamientoDTO actualizarCantidadEquipamientoEnEspacio(Long idEspacio, Long idEquipamiento, Integer cantidad);
+
+
+    /*DEATELLE */
+List<EspacioEquipamiento> listarPorIdEspacio(Long idEspacio);}
+>>>>>>> Stashed changes

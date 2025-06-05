@@ -7,7 +7,7 @@ import com.example.espacio_compartido.model.EspacioEquipamiento;
 import com.example.espacio_compartido.model.EspacioEquipamientoId;
 import com.example.espacio_compartido.repository.EquipamientoRepository;
 import com.example.espacio_compartido.repository.EspacioEquipamientoRepository;
-import com.example.espacio_compartido.repository.EspacioRepository; 
+import com.example.espacio_compartido.repository.EspacioRepository;
 import com.example.espacio_compartido.service.IEspacioEquipamientoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,19 +47,23 @@ public class EspacioEquipamientoServiceImpl implements IEspacioEquipamientoServi
                 .orElseThrow(() -> new RuntimeException("Equipamiento no encontrado o inactivo con ID: " + espacioEquipamientoDTO.getIdEquipamiento()));
 
         EspacioEquipamientoId id = new EspacioEquipamientoId(espacioEquipamientoDTO.getIdEspacio(), espacioEquipamientoDTO.getIdEquipamiento());
+        
         Optional<EspacioEquipamiento> existingAssociation = espacioEquipamientoRepository.findById(id);
 
         EspacioEquipamiento espacioEquipamiento;
         if (existingAssociation.isPresent()) {
             espacioEquipamiento = existingAssociation.get();
             espacioEquipamiento.setCantidad(espacioEquipamientoDTO.getCantidad());
+            espacioEquipamiento.setEspacio(espacio);
+            espacioEquipamiento.setEquipamiento(equipamiento);
         } else {
             espacioEquipamiento = EspacioEquipamiento.builder()
                     .id(id)
                     .cantidad(espacioEquipamientoDTO.getCantidad())
+                    .espacio(espacio)       
+                    .equipamiento(equipamiento) 
                     .build();
         }
-
         EspacioEquipamiento savedAssociation = espacioEquipamientoRepository.save(espacioEquipamiento);
         return convertToDTO(savedAssociation);
     }
@@ -103,4 +107,29 @@ public class EspacioEquipamientoServiceImpl implements IEspacioEquipamientoServi
                 .cantidad(espacioEquipamiento.getCantidad())
                 .build();
     }
+<<<<<<< Updated upstream
+=======
+
+    /*DETALLE */
+    public List<EspacioEquipamiento> listarPorIdEspacio(Long idEspacio) {
+        return espacioEquipamientoRepository.findByEspacioIdEspacio(idEspacio);
+    }
+
+    
+    @Override
+    @Transactional
+    public EspacioEquipamientoDTO actualizarCantidadEquipamientoEnEspacio(Long idEspacio, Long idEquipamiento, Integer cantidad) {
+        EspacioEquipamientoId id = new EspacioEquipamientoId(idEspacio, idEquipamiento);
+        EspacioEquipamiento existingAssociation = espacioEquipamientoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Asociación Espacio-Equipamiento no encontrada para ID Espacio: " + idEspacio + " y ID Equipamiento: " + idEquipamiento));
+        if (cantidad == null || cantidad < 1) {
+            throw new IllegalArgumentException("La cantidad debe ser al menos 1.");
+        }
+
+        existingAssociation.setCantidad(cantidad);
+        EspacioEquipamiento updatedAssociation = espacioEquipamientoRepository.save(existingAssociation);
+        return convertToDTO(updatedAssociation);
+    }
+
+>>>>>>> Stashed changes
 }
