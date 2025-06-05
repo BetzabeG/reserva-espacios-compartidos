@@ -36,5 +36,8 @@ public interface EspacioRepository extends JpaRepository<Espacio, Long> {
         @Param("categoria") String categoria,
         @Param("capacidad") Integer capacidad
     );
-    //prueba
+    //------------------------------
+    @Query("SELECT DISTINCT e.capacidad FROM Espacio e ORDER BY e.capacidad ASC")
+    List<Integer> obtenerCapacidadesUnicas();
+
 }
