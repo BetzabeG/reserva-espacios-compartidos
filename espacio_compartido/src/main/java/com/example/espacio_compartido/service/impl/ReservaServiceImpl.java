@@ -164,12 +164,47 @@ public class ReservaServiceImpl implements IReservaService {
                     .map(this::convertirAReservaDTO)
                     .collect(Collectors.toList());
     }
+
     @Override
     @Transactional
     public ReservaDTO modificarReserva(Long id, ReservaDTO reservaDTO) {
-        
-        return null;
+        // Busca la reserva existente por su ID
+        Reserva reservaExistente = reservaRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reserva no encontrada"));
+    
+        // Verifica que el reservador y el espacio existan
+        boolean existeReservador = reservadorRepository.existsById(reservaDTO.getIdReservador());
+        if (!existeReservador) {
+            throw new EntityNotFoundException("El reservador con ID " + reservaDTO.getIdReservador() + " no existe.");
+        }
+    
+        boolean existeEspacio = espacioRepository.existsById(reservaDTO.getIdEspacio());
+        if (!existeEspacio) {
+            throw new EntityNotFoundException("El espacio con ID " + reservaDTO.getIdEspacio() + " no existe.");
+        }
+    
+        // Actualiza la relación con el Reservador
+        reservaExistente.setReservador(reservadorRepository.findById(reservaDTO.getIdReservador())
+                .orElseThrow(() -> new EntityNotFoundException("El reservador con ID " + reservaDTO.getIdReservador() + " no se encuentra.")));
+    
+        // Actualiza la relación con el Espacio
+        reservaExistente.setEspacio(espacioRepository.findById(reservaDTO.getIdEspacio())
+                .orElseThrow(() -> new EntityNotFoundException("El espacio con ID " + reservaDTO.getIdEspacio() + " no se encuentra.")));
+    
+        // Actualiza otros campos de la reserva
+        reservaExistente.setMotivo(reservaDTO.getMotivo());
+        reservaExistente.setEstadoE(reservaDTO.getEstadoE());
+        reservaExistente.setFechaReserva(reservaDTO.getFechaReserva());
+        reservaExistente.setHoraInicio(reservaDTO.getHoraInicio());
+        reservaExistente.setHoraFin(reservaDTO.getHoraFin());
+    
+        // Guarda la reserva actualizada
+        Reserva reservaActualizada = reservaRepository.save(reservaExistente);
+    
+        // Retorna el DTO de la reserva actualizada
+        return convertirAReservaDTO(reservaActualizada);
     }
+    
     //---------------------------------------
 
     @Override
