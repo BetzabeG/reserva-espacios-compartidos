@@ -13,17 +13,17 @@ INSERT INTO reservador (nombre, ap_paterno, ap_materno, tipo, correo_institucion
 ('Karen', 'Catari', 'Calderon', 'estudiante', 'krcatari@umsa.bo', '65135810', true);
 
 
-INSERT INTO categoria (nombre, descripcion) VALUES
-('Aula', 'Espacio estándar para clases teóricas con capacidad media'),
-('Laboratorio', 'Equipado para prácticas de ciencias e ingeniería'),
-('Auditorio', 'Espacio para eventos masivos con equipamiento audiovisual'),
-('Sala de Reuniones', 'Área para juntas y trabajo colaborativo'),
-('Taller', 'Espacio especializado para trabajo práctico y manualidades'),
-('Biblioteca', 'Área de estudio con acceso a material bibliográfico'),
-('Gimnasio', 'Instalación deportiva para actividades físicas'),
-('Sala de Computo', 'Equipada con computadoras para prácticas digitales'),
-('Cancha Deportiva', 'Área exterior para deportes al aire libre'),
-('Sala de Conferencias', 'Espacio para presentaciones y seminarios');
+INSERT INTO categoria (nombre, descripcion, img_categoria) VALUES
+('Aula', 'Espacio estándar para clases teóricas con capacidad media', 'https://example.com/img/aula.jpg'),
+('Laboratorio', 'Equipado para prácticas de ciencias e ingeniería', 'https://example.com/img/laboratorio.jpg'),
+('Auditorio', 'Espacio para eventos masivos con equipamiento audiovisual', 'https://example.com/img/auditorio.jpg'),
+('Sala de Reuniones', 'Área para juntas y trabajo colaborativo', 'https://example.com/img/sala_reuniones.jpg'),
+('Taller', 'Espacio especializado para trabajo práctico y manualidades', 'https://example.com/img/taller.jpg'),
+('Biblioteca', 'Área de estudio con acceso a material bibliográfico', 'https://example.com/img/biblioteca.jpg'),
+('Gimnasio', 'Instalación deportiva para actividades físicas', 'https://example.com/img/gimnasio.jpg'),
+('Sala de Computo', 'Equipada con computadoras para prácticas digitales', 'https://example.com/img/sala_computo.jpg'),
+('Cancha Deportiva', 'Área exterior para deportes al aire libre', 'https://example.com/img/cancha.jpg'),
+('Sala de Conferencias', 'Espacio para presentaciones y seminarios', 'https://example.com/img/conferencias.jpg');
 
 
 INSERT INTO espacio (capacidad,carrera, descripcion, estado, facultad, ubicacion, id_categoria) VALUES

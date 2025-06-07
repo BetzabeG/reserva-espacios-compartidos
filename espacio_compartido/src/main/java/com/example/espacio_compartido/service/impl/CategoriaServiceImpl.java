@@ -62,6 +62,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
 
         categoriaExistente.setNombre(categoriaDTO.getNombre());
         categoriaExistente.setDescripcion(categoriaDTO.getDescripcion());
+        categoriaExistente.setImgCategoria(categoriaDTO.getImgCategoria()); // <-- Añadido
 
         Categoria categoriaActualizada = categoriaRepository.save(categoriaExistente);
         return convertToDTO(categoriaActualizada);
@@ -103,6 +104,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
                 .idCategoria(categoria.getIdCategoria())
                 .nombre(categoria.getNombre())
                 .descripcion(categoria.getDescripcion())
+                .imgCategoria(categoria.getImgCategoria()) // <-- Añadido
                 .build();
     }
 
@@ -111,6 +113,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
                 .idCategoria(categoriaDTO.getIdCategoria())
                 .nombre(categoriaDTO.getNombre())
                 .descripcion(categoriaDTO.getDescripcion())
+                .imgCategoria(categoriaDTO.getImgCategoria()) // <-- Añadido
                 .build();
     }
 }
