@@ -26,6 +26,7 @@ public class EquipamientoDTO implements Serializable {
     @Size(max = 255, message = "La descripción no puede exceder los 255 caracteres")
     private String descripcion;
 
-    @NotNull(message = "El estado del equipamiento es obligatorio")
+    @NotNull(message = "El estado del equipamiento es obligatorio  :)")
     private Boolean estadoE;
+    
 }
