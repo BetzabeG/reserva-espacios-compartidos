@@ -25,11 +25,7 @@ public class Categoria {
 
     @Column(name = "descripcion", nullable = false)
     private String descripcion;
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> e4c83f967a6f0bc5f6ece8aaea65592f275752d7
     @Column(name = "img_categoria")
     private String imgCategoria;
 }
