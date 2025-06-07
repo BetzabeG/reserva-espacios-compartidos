@@ -97,6 +97,7 @@ public class ReservaController {
 
         return ResponseEntity.noContent().build(); 
     }
+    
     @GetMapping("espacioyfecha/{espacioId}/{fecha}")
     public ResponseEntity<List<ReservaDTO>> obtenerReservasPorEspacioYFecha(
             @PathVariable Long espacioId, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
@@ -109,6 +110,7 @@ public class ReservaController {
         
         return ResponseEntity.ok(reservas);
     }
+
     @GetMapping("reservador/{idReservador}")
     public ResponseEntity<List<ReservaDTO>> obtenerReservasPorIdReservador(@PathVariable Long idReservador) {
         long inicio = System.currentTimeMillis();

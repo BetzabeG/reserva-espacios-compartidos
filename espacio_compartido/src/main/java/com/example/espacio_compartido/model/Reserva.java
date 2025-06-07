@@ -55,4 +55,3 @@ public class Reserva {
     private String estadoE; // Estado de la reserva (ej. PENDIENTE, CONFIRMADA, CANCELADA, FINALIZADA)
 
 }
-
