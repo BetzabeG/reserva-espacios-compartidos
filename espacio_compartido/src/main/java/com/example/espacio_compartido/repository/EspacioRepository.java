@@ -18,7 +18,7 @@ public interface EspacioRepository extends JpaRepository<Espacio, Long> {
 
     List<Espacio> findByEstado(Boolean estado);
     //-----------------------
-    @Query("SELECT e FROM Espacio e " +
+    /*@Query("SELECT e FROM Espacio e " +
             "JOIN e.categoria c " +
             "WHERE (:facultad IS NULL OR e.facultad = :facultad) " +
             "AND (:carrera IS NULL OR e.carrera = :carrera) " +
@@ -35,7 +35,22 @@ public interface EspacioRepository extends JpaRepository<Espacio, Long> {
         @Param("carrera") String carrera,
         @Param("categoria") String categoria,
         @Param("capacidad") Integer capacidad
-    );
+
+        Nota: Afecta a las reservas
+    );*/
+
+    @Query("SELECT e FROM Espacio e " +
+            "JOIN e.categoria c " +
+            "WHERE (:facultad IS NULL OR e.facultad = :facultad) " +
+            "AND (:carrera IS NULL OR e.carrera = :carrera) " +
+            "AND (:categoria IS NULL OR c.nombre = :categoria) " +
+            "AND (:capacidad IS NULL OR e.capacidad >= :capacidad)")
+    List<Espacio> filtrarEspacios( // Este es el nombre original que tenías
+        @Param("facultad") String facultad,
+        @Param("carrera") String carrera,
+        @Param("categoria") String categoria,
+        @Param("capacidad") Integer capacidad
+);
     //------------------------------
     @Query("SELECT DISTINCT e.capacidad FROM Espacio e ORDER BY e.capacidad ASC")
     List<Integer> obtenerCapacidadesUnicas();
