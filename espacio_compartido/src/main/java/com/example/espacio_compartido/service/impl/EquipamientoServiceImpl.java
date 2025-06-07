@@ -45,7 +45,7 @@ public class EquipamientoServiceImpl implements IEquipamientoService {
     @Override
     @Transactional
     public EquipamientoDTO crearEquipamiento(EquipamientoDTO equipamientoDTO) {
-        equipamientoValidator.validarNombreEquipamientoUnico(equipamientoDTO.getNombre());
+        //equipamientoValidator.validarNombreEquipamientoUnico(equipamientoDTO.getNombre());
 
         Equipamiento equipamiento = convertToEntity(equipamientoDTO);
         equipamiento.setEstadoE(true); // Nuevo equipamiento siempre activo por defecto
@@ -59,9 +59,9 @@ public class EquipamientoServiceImpl implements IEquipamientoService {
         Equipamiento equipamientoExistente = equipamientoRepository.findById(idEquipamiento)
                 .orElseThrow(() -> new RuntimeException("Equipamiento no encontrado con ID: " + idEquipamiento));
 
-        if (!equipamientoExistente.getNombre().equalsIgnoreCase(equipamientoDTO.getNombre())) {
+        /*if (!equipamientoExistente.getNombre().equalsIgnoreCase(equipamientoDTO.getNombre())) {
             equipamientoValidator.validarNombreEquipamientoUnico(equipamientoDTO.getNombre());
-        }
+        }*/
 
         equipamientoExistente.setNombre(equipamientoDTO.getNombre());
         equipamientoExistente.setDescripcion(equipamientoDTO.getDescripcion());
