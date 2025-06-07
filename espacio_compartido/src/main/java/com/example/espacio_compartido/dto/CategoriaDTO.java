@@ -22,4 +22,6 @@ public class CategoriaDTO implements Serializable {
 
     @NotBlank(message = "La descripcion es obligatorio")
     private String descripcion;
+
+    private String imgCategoria;
 }

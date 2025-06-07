@@ -25,4 +25,7 @@ public class Categoria {
 
     @Column(name = "descripcion", nullable = false)
     private String descripcion;
+
+    @Column(name = "img_categoria")
+    private String imgCategoria;
 }
