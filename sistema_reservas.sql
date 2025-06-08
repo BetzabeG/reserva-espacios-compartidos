@@ -58,3 +58,9 @@ INSERT INTO reserva (id_reservador, id_espacio, fecha_creacion, fecha, hora_inic
 (6, 1, '2025-06-06', '2025-06-10', '18:00', '20:00', 'Grupo de estudio nocturno', 'CANCELADA'),
 (7, 5, '2025-06-07', '2025-06-11', '13:00', '15:00', 'Simulación de hackathon', 'PENDIENTE'),
 (8, 2, '2025-06-08', '2025-06-12', '14:00', '16:00', 'Investigación académica de bioquímica', 'CONFIRMADA');
+
+
+
+UPDATE categoria
+SET img_categoria = 'https://img.freepik.com/fotos-premium/pintura-digital-gato-sombrero-gafas-proteccion-gato-esta-mirando-al-espectador-expresion-curiosa_14117-270184.jpg?w=360'
+WHERE id_categoria = 1;

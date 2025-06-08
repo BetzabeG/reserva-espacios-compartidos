@@ -62,7 +62,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
 
         categoriaExistente.setNombre(categoriaDTO.getNombre());
         categoriaExistente.setDescripcion(categoriaDTO.getDescripcion());
-        categoriaExistente.setImgCategoria(categoriaDTO.getImgCategoria()); // <-- Añadido
+        categoriaExistente.setImgCategoria(categoriaDTO.getImgCategoria()); 
 
         Categoria categoriaActualizada = categoriaRepository.save(categoriaExistente);
         return convertToDTO(categoriaActualizada);

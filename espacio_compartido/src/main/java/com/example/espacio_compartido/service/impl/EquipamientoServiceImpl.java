@@ -66,6 +66,7 @@ public class EquipamientoServiceImpl implements IEquipamientoService {
         equipamientoExistente.setNombre(equipamientoDTO.getNombre());
         equipamientoExistente.setDescripcion(equipamientoDTO.getDescripcion());
         equipamientoExistente.setEstadoE(equipamientoDTO.getEstadoE());
+        equipamientoExistente.setImgEquipamiento(equipamientoDTO.getImgEquipamiento()); 
 
         Equipamiento updatedEquipamiento = equipamientoRepository.save(equipamientoExistente);
         return convertToDTO(updatedEquipamiento);
@@ -90,6 +91,7 @@ public class EquipamientoServiceImpl implements IEquipamientoService {
                 .nombre(equipamiento.getNombre())
                 .descripcion(equipamiento.getDescripcion())
                 .estadoE(equipamiento.getEstadoE())
+                .imgEquipamiento(equipamiento.getImgEquipamiento())
                 .build();
     }
 
@@ -99,6 +101,7 @@ public class EquipamientoServiceImpl implements IEquipamientoService {
                 .nombre(equipamientoDTO.getNombre())
                 .descripcion(equipamientoDTO.getDescripcion())
                 .estadoE(equipamientoDTO.getEstadoE())
+                .imgEquipamiento(equipamientoDTO.getImgEquipamiento())
                 .build();
     }
 }

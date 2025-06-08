@@ -16,4 +16,6 @@ public interface IEspacioEquipamientoService {
     void desasociarEquipamientoDeEspacio(Long idEspacio, Long idEquipamiento);
 
     /*DEATELLE */
-List<EspacioEquipamiento> listarPorIdEspacio(Long idEspacio);}
+    List<EspacioEquipamiento> listarPorIdEspacio(Long idEspacio);
+
+}

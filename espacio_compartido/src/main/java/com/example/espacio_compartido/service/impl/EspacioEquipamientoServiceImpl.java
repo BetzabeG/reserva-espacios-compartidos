@@ -111,6 +111,7 @@ public class EspacioEquipamientoServiceImpl implements IEspacioEquipamientoServi
     public List<EspacioEquipamiento> listarPorIdEspacio(Long idEspacio) {
         return espacioEquipamientoRepository.findByEspacioIdEspacio(idEspacio);
     }
+    
 
 
 }
