@@ -67,6 +67,7 @@ public class EspacioServiceImpl implements IEspacioService {
         espacioExistente.setUbicacion(espacioDTO.getUbicacion());
         espacioExistente.setCapacidad(espacioDTO.getCapacidad());
         espacioExistente.setEstado(espacioDTO.getEstado());
+        espacioExistente.setImgEspacio(espacioDTO.getImgEspacio());
 
         return convertToDTO(espacioRepository.save(espacioExistente));
     }
@@ -117,6 +118,7 @@ public class EspacioServiceImpl implements IEspacioService {
                 .ubicacion(espacio.getUbicacion())
                 .capacidad(espacio.getCapacidad())
                 .estado(espacio.getEstado())
+                .imgEspacio(espacio.getImgEspacio())
                 .build();
     }
 
@@ -131,6 +133,7 @@ public class EspacioServiceImpl implements IEspacioService {
                 .ubicacion(dto.getUbicacion())
                 .capacidad(dto.getCapacidad())
                 .estado(dto.getEstado())
+                .imgEspacio(dto.getImgEspacio())
                 .build();
     }
 

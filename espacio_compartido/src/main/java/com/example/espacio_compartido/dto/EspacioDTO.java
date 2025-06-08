@@ -36,4 +36,7 @@ public class EspacioDTO implements Serializable {
 
     @NotNull(message = "El estado de esapacio es obligatorio")
     private Boolean estado;
+
+    //campo para la imagen
+    private String imgEspacio;
 }

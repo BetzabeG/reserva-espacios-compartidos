@@ -86,7 +86,7 @@ public class ReservaController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
     }
-
+    /* 
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
         logger.info("[CACHE] Eliminando reserva con ID: " + id);
@@ -97,7 +97,18 @@ public class ReservaController {
 
         return ResponseEntity.noContent().build(); 
     }
-    
+    */
+    @PutMapping("/eliminar/{id}")
+    public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
+        logger.info("[CACHE] Cambiando estado de reserva con ID: " + id + " a CANCELADA");
+
+        reservaService.eliminarReserva(id);
+
+        logger.info("[CACHE] Estado de reserva actualizado! Caché eliminado.");
+
+        return ResponseEntity.noContent().build(); 
+    }
+
     @GetMapping("espacioyfecha/{espacioId}/{fecha}")
     public ResponseEntity<List<ReservaDTO>> obtenerReservasPorEspacioYFecha(
             @PathVariable Long espacioId, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {

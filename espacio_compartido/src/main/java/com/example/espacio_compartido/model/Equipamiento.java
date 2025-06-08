@@ -31,4 +31,7 @@ public class Equipamiento {
 
     @Column(name = "estado_e", nullable = false)
     private Boolean estadoE; 
+
+    //@Column(name = "img_equipamiento")
+    //private String imgEquipamiento;
 }

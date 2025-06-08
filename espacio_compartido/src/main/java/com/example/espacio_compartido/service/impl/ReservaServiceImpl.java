@@ -107,7 +107,7 @@ public class ReservaServiceImpl implements IReservaService {
 
         return convertirAReservaDTO(nuevaReserva);
     }
-
+/* 
     @Override
     @Transactional
     @CacheEvict(value = {"reservasPorEstado", "todasLasReservas","reservasPorEspacioYFecha","reservasPorReservador","reservasPorCorreoReservador","reservasFiltradas"}, allEntries = true)
@@ -116,7 +116,19 @@ public class ReservaServiceImpl implements IReservaService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La reserva con ID " + id + " no existe."));
 
         reservaRepository.delete(reserva);
+    }*/
+
+    @Override
+    @Transactional
+    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas","reservasPorEspacioYFecha","reservasPorReservador","reservasPorCorreoReservador","reservasFiltradas"}, allEntries = true)
+    public void eliminarReserva(Long id) {
+        Reserva reserva = reservaRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La reserva con ID " + id + " no existe."));
+
+        reserva.setEstadoE("CANCELADA");
+        reservaRepository.save(reserva);
     }
+
     @Override
     @Transactional
     @Cacheable(value = "reservasPorEspacioYFecha", key = "#espacioId + '-' + #fechaReserva")
