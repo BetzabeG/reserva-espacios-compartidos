@@ -39,7 +39,7 @@ public class ReservaServiceImpl implements IReservaService {
     private final ReservadorRepository reservadorRepository;
     private final EspacioRepository espacioRepository;
     private final ReservaValidator reservaValidator;
-    //prueba
+
     @Autowired
     public ReservaServiceImpl(ReservaRepository reservaRepository, ReservadorRepository reservadorRepository, EspacioRepository espacioRepository, ReservaValidator reservaValidator) {
         this.reservaRepository = reservaRepository;
@@ -52,20 +52,18 @@ public class ReservaServiceImpl implements IReservaService {
     @Cacheable(value = "todasLasReservas") 
     @Transactional(readOnly = true)
     public List<ReservaDTO> obtenerTodasLasReservas() {
-        List<Reserva> reservas = reservaRepository.findAll(); 
+        List<Reserva> reservas = reservaRepository.findByActivoTrue(); // Ahora solo obtiene reservas activas
 
         return reservas.stream()
                 .map(this::convertirAReservaDTO)
                 .collect(Collectors.toList());
     }
-
-
     @Override
     @Cacheable(value = "reservaPorId", key = "#id")
     @Transactional(readOnly = true)
     public ReservaDTO obtenerReservaPorId(Long id) {
-        Reserva reserva = reservaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Reserva no encontrada"));
+        Reserva reserva = reservaRepository.findByIdAndActivoTrue(id)
+                .orElseThrow(() -> new EntityNotFoundException("Reserva no encontrada o inactiva")); 
 
         return convertirAReservaDTO(reserva);
     }
@@ -73,30 +71,26 @@ public class ReservaServiceImpl implements IReservaService {
     @Cacheable(value = "reservasPorEstado", key = "#estado") // Almacena en caché cada búsqueda por estado
     @Transactional(readOnly = true) // Solo lectura, evita bloqueos innecesarios
     public List<ReservaDTO> obtenerReservasPorEstado(String estado) {
-        List<Reserva> reservas = reservaRepository.findByEstadoE(estado);
+        List<Reserva> reservas = reservaRepository.findByEstadoEAndActivoTrue(estado); // Filtra solo reservas activas
 
         if (reservas.isEmpty()) {
-            throw new EntityNotFoundException("No hay reservas con estado: " + estado);
+            throw new EntityNotFoundException("No hay reservas activas con estado: " + estado);
         }
-
         return reservas.stream()
                 .map(this::convertirAReservaDTO)
                 .collect(Collectors.toList());
     }
+
 
     @Transactional
     @CacheEvict(value = {"reservasPorEstado", "todasLasReservas","reservasPorEspacioYFecha","reservasPorReservador","reservasPorCorreoReservador","reservasFiltradas"}, allEntries = true) // Limpia caché desactualizado
     public ReservaDTO crearReserva(ReservaDTO reservaDTO) {
         reservaDTO.setFechaCreacion(LocalDate.now());
         reservaValidator.validacionCompletaReserva(reservaDTO);
-
-        // Validamos que el reservador exista
         boolean existeReservador = reservadorRepository.existsById(reservaDTO.getIdReservador());
         if (!existeReservador) {
             throw new EntityNotFoundException("El reservador con ID " + reservaDTO.getIdReservador() + " no existe.");
         }
-
-        // Validamos que el espacio exista
         boolean existeEspacio = espacioRepository.existsById(reservaDTO.getIdEspacio());
         if (!existeEspacio) {
             throw new EntityNotFoundException("El espacio con ID " + reservaDTO.getIdEspacio() + " no existe.");
@@ -106,21 +100,13 @@ public class ReservaServiceImpl implements IReservaService {
         if (existe) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ese espacio ya está ocupado en la fecha y hora seleccionada.");
         }
+
         Reserva nuevaReserva = convertirAEntidad(reservaDTO);
+        nuevaReserva.setActivo(true); // Asegura que la reserva sea activa al guardarla
         nuevaReserva = reservaRepository.save(nuevaReserva);
 
         return convertirAReservaDTO(nuevaReserva);
     }
-    /* 
-    @Override
-    @Transactional
-    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas","reservasPorEspacioYFecha","reservasPorReservador","reservasPorCorreoReservador","reservasFiltradas"}, allEntries = true)
-    public void eliminarReserva(Long id) {
-        Reserva reserva = reservaRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La reserva con ID " + id + " no existe."));
-
-        reservaRepository.delete(reserva);
-    }*/
 
     private static final Logger logger = LoggerFactory.getLogger(ReservaServiceImpl.class); // Mueve esta línea fuera del método
 
@@ -129,7 +115,7 @@ public class ReservaServiceImpl implements IReservaService {
     @CacheEvict(value = {"reservasPorEstado", "todasLasReservas", "reservasPorEspacioYFecha", "reservasPorReservador", "reservasPorCorreoReservador", "reservasFiltradas"}, allEntries = true)
     public void eliminarReserva(Long id) {
         try {
-            Reserva reserva = reservaRepository.findById(id)
+            Reserva reserva = reservaRepository.findByIdAndActivoTrue(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La reserva con ID " + id + " no existe."));
 
             reserva.setEstadoE("CANCELADA");
@@ -139,6 +125,23 @@ public class ReservaServiceImpl implements IReservaService {
         } catch (Exception e) {
             logger.error("Error al cancelar la reserva con ID: " + id, e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ocurrió un error al cancelar la reserva.");
+        }
+    }
+    @Override
+    @Transactional
+    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas", "reservasPorEspacioYFecha", "reservasPorReservador", "reservasPorCorreoReservador", "reservasFiltradas"}, allEntries = true)
+    public void desactivarReserva(Long id) {
+        try {
+            Reserva reserva = reservaRepository.findByIdAndActivoTrue(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La reserva con ID " + id + " no existe."));
+
+            reserva.setActivo(false); // Cambia activo a false para eliminarla lógicamente
+            reservaRepository.save(reserva);
+
+            logger.info("Reserva con ID " + id + " ha sido desactivada (eliminación lógica).");
+        } catch (Exception e) {
+            logger.error("Error al desactivar la reserva con ID: " + id, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ocurrió un error al desactivar la reserva.");
         }
     }
 
@@ -151,11 +154,13 @@ public class ReservaServiceImpl implements IReservaService {
         }
         reservaValidator.validaFechaReserva(fechaReserva);
 
-        List<Reserva> reservas = reservaRepository.findByEspacioIdAndFechaReserva(espacioId, fechaReserva);
+        List<Reserva> reservas = reservaRepository.findByEspacioIdAndFechaReservaAndActivoTrue(espacioId, fechaReserva); // Solo reservas activas
+
         return reservas.stream()
                     .map(this::convertirAReservaDTO)
                     .collect(Collectors.toList());
     }
+
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "reservasPorReservador", key = "#idReservador")
@@ -169,8 +174,8 @@ public class ReservaServiceImpl implements IReservaService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El reservador con ID " + idReservador + " no existe.");
         }
 
-        List<Reserva> reservas = reservaRepository.findByIdReservador(idReservador);
-        
+        List<Reserva> reservas = reservaRepository.findByIdReservadorAndActivoTrue(idReservador); // Solo reservas activas
+
         return reservas.stream()
                     .map(this::convertirAReservaDTO)
                     .collect(Collectors.toList());
@@ -180,24 +185,22 @@ public class ReservaServiceImpl implements IReservaService {
     @Transactional(readOnly = true)
     @Cacheable(value = "reservasPorCorreoReservador", key = "#correoReservador")
     public List<ReservaDTO> obtenerReservasPorCorreo(String correoReservador) {
-
         reservaValidator.validaCorreoReservador(correoReservador);
 
-        List<Reserva> reservas = reservaRepository.findByCorreoReservador(correoReservador);
+        List<Reserva> reservas = reservaRepository.findByReservadorCorreoAndActivoTrue(correoReservador); // Solo reservas activas
 
         return reservas.stream()
                     .map(this::convertirAReservaDTO)
                     .collect(Collectors.toList());
     }
 
+
     @Override
     @Transactional
     public ReservaDTO modificarReserva(Long id, ReservaDTO reservaDTO) {
-        // Busca la reserva existente por su ID
-        Reserva reservaExistente = reservaRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reserva no encontrada"));
+        Reserva reservaExistente = reservaRepository.findByIdAndActivoTrue(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reserva no encontrada o inactiva"));
     
-        // Verifica que el reservador y el espacio existan
         boolean existeReservador = reservadorRepository.existsById(reservaDTO.getIdReservador());
         if (!existeReservador) {
             throw new EntityNotFoundException("El reservador con ID " + reservaDTO.getIdReservador() + " no existe.");
@@ -207,16 +210,13 @@ public class ReservaServiceImpl implements IReservaService {
         if (!existeEspacio) {
             throw new EntityNotFoundException("El espacio con ID " + reservaDTO.getIdEspacio() + " no existe.");
         }
-    
-        // Actualiza la relación con el Reservador
+
         reservaExistente.setReservador(reservadorRepository.findById(reservaDTO.getIdReservador())
                 .orElseThrow(() -> new EntityNotFoundException("El reservador con ID " + reservaDTO.getIdReservador() + " no se encuentra.")));
     
-        // Actualiza la relación con el Espacio
         reservaExistente.setEspacio(espacioRepository.findById(reservaDTO.getIdEspacio())
                 .orElseThrow(() -> new EntityNotFoundException("El espacio con ID " + reservaDTO.getIdEspacio() + " no se encuentra.")));
     
-        // Actualiza otros campos de la reserva
         reservaExistente.setMotivo(reservaDTO.getMotivo());
         reservaExistente.setEstadoE(reservaDTO.getEstadoE());
         reservaExistente.setFechaReserva(reservaDTO.getFechaReserva());
@@ -230,29 +230,28 @@ public class ReservaServiceImpl implements IReservaService {
         return convertirAReservaDTO(reservaActualizada);
     }
     
-    //---------------------------------------
-
     @Override
     public List<ReservaDTO> obtenerReservasPorEspacioYRangoFechas(Long espacioId, LocalDate fechaInicio, LocalDate fechaFin) {
         Espacio espacio = espacioRepository.findById(espacioId)
                 .orElseThrow(() -> new RuntimeException("Espacio no encontrado con ID: " + espacioId));
 
-        List<Reserva> reservas = reservaRepository.findByEspacioAndEstadoEAndFechaReservaBetween(
+        List<Reserva> reservas = reservaRepository.findByEspacioAndEstadoEAndFechaReservaBetweenAndActivoTrue(
             espacio, "CONFIRMADA", fechaInicio, fechaFin
-        );
+        ); // Filtra solo reservas activas
 
         return reservas.stream()
                 .map(this::convertirAReservaDTO)
                 .collect(Collectors.toList());
     }
 
+    /* 
     @Override
     public HorarioDisponibilidadDTO obtenerHorariosDisponibles(Long espacioId, LocalDate fecha) {
         Espacio espacio = espacioRepository.findById(espacioId)
                 .orElseThrow(() -> new RuntimeException("Espacio no encontrado con ID: " + espacioId));
 
-        LocalTime horaApertura = LocalTime.of(8, 0); // 08:00 AM
-        LocalTime horaCierre = LocalTime.of(22, 0);  // 10:00 PM
+        LocalTime horaApertura = LocalTime.of(8, 0); 
+        LocalTime horaCierre = LocalTime.of(22, 0);  
 
         List<LocalTime> horasDisponibles = new ArrayList<>();
         List<LocalTime> horasOcupadas = new ArrayList<>();
@@ -288,43 +287,52 @@ public class ReservaServiceImpl implements IReservaService {
                 .horasDisponibles(horasDisponibles)
                 .horasOcupadas(horasOcupadas)
                 .build();
+    }*/
+    @Override
+    public HorarioDisponibilidadDTO obtenerHorariosDisponibles(Long espacioId, LocalDate fecha) {
+        Espacio espacio = espacioRepository.findById(espacioId)
+                .orElseThrow(() -> new RuntimeException("Espacio no encontrado con ID: " + espacioId));
+
+        LocalTime horaApertura = LocalTime.of(8, 0); 
+        LocalTime horaCierre = LocalTime.of(22, 0);  
+
+        List<LocalTime> horasDisponibles = new ArrayList<>();
+        List<LocalTime> horasOcupadas = new ArrayList<>();
+
+        List<Reserva> reservasDelDia = reservaRepository.findByEspacioAndFechaReservaAndActivoTrueOrderByHoraInicioAsc(espacio, fecha)
+                .stream()
+                .filter(r -> r.getEstadoE().equalsIgnoreCase("CONFIRMADA"))
+                .collect(Collectors.toList()); // Solo reservas activas y confirmadas
+
+        for (LocalTime hora = horaApertura; hora.isBefore(horaCierre); hora = hora.plusHours(1)) {
+            LocalTime siguienteHora = hora.plusHours(1);
+            boolean ocupada = false;
+
+            for (Reserva reserva : reservasDelDia) {
+                if ((hora.isAfter(reserva.getHoraInicio().minusMinutes(1)) && hora.isBefore(reserva.getHoraFin())) ||
+                    (siguienteHora.isAfter(reserva.getHoraInicio()) && siguienteHora.isBefore(reserva.getHoraFin().plusMinutes(1))) ||
+                    (hora.equals(reserva.getHoraInicio()) && siguienteHora.equals(reserva.getHoraFin()))) {
+                    ocupada = true;
+                    break;
+                }
+            }
+
+            if (ocupada) {
+                horasOcupadas.add(hora);
+            } else {
+                horasDisponibles.add(hora);
+            }
+            }
+
+        return HorarioDisponibilidadDTO.builder()
+                .fecha(fecha)
+                .espacioId(espacioId)
+                .horasDisponibles(horasDisponibles)
+                .horasOcupadas(horasOcupadas)
+                .build();
     }
 
-    //implemnejszjdg
-    /* 
-    @Override
-    @Cacheable(value = "reservasFiltradas")
-    @Transactional(readOnly = true)
-    public List<ReservaDTO> filtrarReservas(String facultad, String carrera, String categoria, LocalDate fecha, String rango) {
-        LocalDate fechaInicio = null;
-        LocalDate fechaFin = null;
 
-        if (rango != null) {
-            LocalDate hoy = LocalDate.now();
-            switch (rango.toUpperCase()) {
-                case "HOY":
-                    fechaInicio = hoy;
-                    fechaFin = hoy;
-                    break;
-                case "SEMANA":
-                    fechaInicio = hoy;
-                    fechaFin = hoy.plusDays(7);
-                    break;
-                case "MES":
-                    fechaInicio = hoy.withDayOfMonth(1);
-                    fechaFin = hoy.withDayOfMonth(hoy.lengthOfMonth());
-                    break;
-                default:
-                    throw new IllegalArgumentException("Rango no reconocido: " + rango);
-            }
-        }
-
-        List<Reserva> reservas = reservaRepository.filtrarReservas(facultad, carrera, categoria, fecha, fechaInicio, fechaFin);
-
-        return reservas.stream()
-                .map(this::convertirAReservaDTO)
-                .collect(Collectors.toList());
-    }*/
     @Override
     @Cacheable(value = "reservasFiltradas")
     @Transactional(readOnly = true)
@@ -351,16 +359,11 @@ public class ReservaServiceImpl implements IReservaService {
                     throw new IllegalArgumentException("Rango no reconocido: " + rango);
             }
         }
-
-        // Filtrar por estado
         List<Reserva> reservas = reservaRepository.filtrarReservas(facultad, carrera, categoria, fecha, fechaInicio, fechaFin, estado);
-
         return reservas.stream()
                 .map(this::convertirAReservaDTO)
                 .collect(Collectors.toList());
     }
-
-
 
     private ReservaDTO convertirAReservaDTO(Reserva reserva) {
         return ReservaDTO.builder()

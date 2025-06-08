@@ -218,5 +218,16 @@ public class ReservaController {
         
         return ResponseEntity.ok(reservas);
     }
+    @PutMapping("/desactivar/{id}")
+    public ResponseEntity<Void> desactivarReserva(@PathVariable Long id) {
+        logger.info("[CACHE] Desactivando reserva con ID: {}", id);
+
+        reservaService.desactivarReserva(id);
+
+        logger.info("[CACHE] Reserva desactivada correctamente! Caché eliminado.");
+        
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

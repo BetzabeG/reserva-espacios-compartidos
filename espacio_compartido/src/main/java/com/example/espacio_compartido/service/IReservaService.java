@@ -53,7 +53,11 @@ public interface IReservaService {
      * @throws RuntimeException si la reserva no existe.
      */
     void eliminarReserva(Long id);
-
+    /*
+     * borrar una rserva del frontend
+     * @param id ID de la reserva a eliminar.
+     */
+    void desactivarReserva(Long id);
     /**
      * Obtiene las reservas de un espacio para una fecha específica.
      * @param espacioId ID del espacio.
