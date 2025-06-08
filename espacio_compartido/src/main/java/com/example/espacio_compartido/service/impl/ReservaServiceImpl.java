@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.CacheEvict;
 
@@ -27,6 +28,9 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Service
 public class ReservaServiceImpl implements IReservaService {
@@ -118,15 +122,24 @@ public class ReservaServiceImpl implements IReservaService {
         reservaRepository.delete(reserva);
     }*/
 
+    private static final Logger logger = LoggerFactory.getLogger(ReservaServiceImpl.class); // Mueve esta línea fuera del método
+
     @Override
     @Transactional
-    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas","reservasPorEspacioYFecha","reservasPorReservador","reservasPorCorreoReservador","reservasFiltradas"}, allEntries = true)
+    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas", "reservasPorEspacioYFecha", "reservasPorReservador", "reservasPorCorreoReservador", "reservasFiltradas"}, allEntries = true)
     public void eliminarReserva(Long id) {
-        Reserva reserva = reservaRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La reserva con ID " + id + " no existe."));
+        try {
+            Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La reserva con ID " + id + " no existe."));
 
-        reserva.setEstadoE("CANCELADA");
-        reservaRepository.save(reserva);
+            reserva.setEstadoE("CANCELADA");
+            reservaRepository.save(reserva);
+
+            logger.info("Reserva con ID " + id + " marcada como CANCELADA."); // Ahora `logger` funciona correctamente
+        } catch (Exception e) {
+            logger.error("Error al cancelar la reserva con ID: " + id, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ocurrió un error al cancelar la reserva.");
+        }
     }
 
     @Override

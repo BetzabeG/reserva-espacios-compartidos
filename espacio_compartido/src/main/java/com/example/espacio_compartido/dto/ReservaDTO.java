@@ -52,6 +52,6 @@ public class ReservaDTO  implements Serializable{
     private String motivo;
 
     @NotBlank(message = "El estado de la reserva es obligatorio")
-    @Pattern(regexp = "CONFIRMADA|PENDIENTE|CANCELADA", message = "El estado debe ser PENDIENTE, CONFIRMADA, CANCELADA o FINALIZADA")
+    @Pattern(regexp = "CONFIRMADA|CANCELADA", message = "El estado debe ser CONFIRMADA, CANCELADA")
     private String estadoE;
 }
