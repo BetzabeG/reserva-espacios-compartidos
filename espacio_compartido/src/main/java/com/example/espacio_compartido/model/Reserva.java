@@ -16,7 +16,7 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "reserva")
 public class Reserva {
-//prueba
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idReserva;
@@ -52,6 +52,8 @@ public class Reserva {
     private String motivo; // Propósito de la reserva
 
     @Column(name = "estado_e", nullable = false, length = 20)
-    private String estadoE; // Estado de la reserva (ej. PENDIENTE, CONFIRMADA, CANCELADA, FINALIZADA)
+    private String estadoE; // Estado de la reserva
 
+    @Column(name = "activo", nullable = false)
+    private boolean activo = true; // Indica si la reserva está activa (true) o eliminada lógicamente (false)
 }

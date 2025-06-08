@@ -111,7 +111,7 @@ public class ReservaServiceImpl implements IReservaService {
 
         return convertirAReservaDTO(nuevaReserva);
     }
-/* 
+    /* 
     @Override
     @Transactional
     @CacheEvict(value = {"reservasPorEstado", "todasLasReservas","reservasPorEspacioYFecha","reservasPorReservador","reservasPorCorreoReservador","reservasFiltradas"}, allEntries = true)
@@ -291,6 +291,7 @@ public class ReservaServiceImpl implements IReservaService {
     }
 
     //implemnejszjdg
+    /* 
     @Override
     @Cacheable(value = "reservasFiltradas")
     @Transactional(readOnly = true)
@@ -323,7 +324,43 @@ public class ReservaServiceImpl implements IReservaService {
         return reservas.stream()
                 .map(this::convertirAReservaDTO)
                 .collect(Collectors.toList());
+    }*/
+    @Override
+    @Cacheable(value = "reservasFiltradas")
+    @Transactional(readOnly = true)
+    public List<ReservaDTO> filtrarReservas(String facultad, String carrera, String categoria, LocalDate fecha, String rango, String estado) {
+        LocalDate fechaInicio = null;
+        LocalDate fechaFin = null;
+
+        if (rango != null) {
+            LocalDate hoy = LocalDate.now();
+            switch (rango.toUpperCase()) {
+                case "HOY":
+                    fechaInicio = hoy;
+                    fechaFin = hoy;
+                    break;
+                case "SEMANA":
+                    fechaInicio = hoy;
+                    fechaFin = hoy.plusDays(7);
+                    break;
+                case "MES":
+                    fechaInicio = hoy.withDayOfMonth(1);
+                    fechaFin = hoy.withDayOfMonth(hoy.lengthOfMonth());
+                    break;
+                default:
+                    throw new IllegalArgumentException("Rango no reconocido: " + rango);
+            }
+        }
+
+        // Filtrar por estado
+        List<Reserva> reservas = reservaRepository.filtrarReservas(facultad, carrera, categoria, fecha, fechaInicio, fechaFin, estado);
+
+        return reservas.stream()
+                .map(this::convertirAReservaDTO)
+                .collect(Collectors.toList());
     }
+
+
 
     private ReservaDTO convertirAReservaDTO(Reserva reserva) {
         return ReservaDTO.builder()

@@ -181,7 +181,7 @@ public class ReservaController {
         return ResponseEntity.ok(reservas);
     }
 
-
+    /* 
     @GetMapping("/api/reserva/filtrocombinado")
     public ResponseEntity<List<ReservaDTO>> filtrarReservas(
             @RequestParam(required = false) String facultad,
@@ -198,5 +198,25 @@ public class ReservaController {
         long fin = System.currentTimeMillis();
         logger.info("[RESERVA] Fin filtrarReservas: {} ms", (fin - inicio));
         return ResponseEntity.ok(reservas);
+    }*/
+    @GetMapping("/api/reserva/filtrocombinado")
+    public ResponseEntity<List<ReservaDTO>> filtrarReservas(
+            @RequestParam(required = false) String facultad,
+            @RequestParam(required = false) String carrera,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) String rango,
+            @RequestParam(required = false) String estado // Filtro adicional para estado
+    ) {
+        long inicio = System.currentTimeMillis();
+        logger.info("[RESERVA] Inicio filtrarReservas con estado: {}", estado);
+
+        List<ReservaDTO> reservas = reservaService.filtrarReservas(facultad, carrera, categoria, fecha, rango, estado);
+
+        long fin = System.currentTimeMillis();
+        logger.info("[RESERVA] Fin filtrarReservas: {} ms (Resultados: {})", (fin - inicio), reservas.size());
+        
+        return ResponseEntity.ok(reservas);
     }
+
 }

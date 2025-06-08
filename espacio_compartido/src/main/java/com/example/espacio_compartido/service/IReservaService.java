@@ -97,16 +97,18 @@ public interface IReservaService {
     HorarioDisponibilidadDTO obtenerHorariosDisponibles(Long espacioId, LocalDate fecha); 
 
     /**
-     * Filtra reservas por facultad, carrera, categoría, fecha exacta o rango.
-     * Todos los filtros son opcionales y combinables.
-     * 
-     * @param facultad Nombre de la facultad.
-     * @param carrera Nombre de la carrera.
-     * @param categoria Nombre de la categoría.
-     * @param fecha Fecha exacta (opcional si se usa rango).
-     * @param rango "HOY", "SEMANA", "MES", etc.
-     * @return Lista de ReservaDTO con las reservas que coinciden.
-     */
-    List<ReservaDTO> filtrarReservas(String facultad, String carrera, String categoria, LocalDate fecha, String rango);
+ * Filtra reservas por facultad, carrera, categoría, fecha exacta, rango y estado.
+ * Todos los filtros son opcionales y combinables.
+ * 
+ * @param facultad Nombre de la facultad.
+ * @param carrera Nombre de la carrera.
+ * @param categoria Nombre de la categoría.
+ * @param fecha Fecha exacta (opcional si se usa rango).
+ * @param rango "HOY", "SEMANA", "MES", etc.
+ * @param estado Estado de la reserva ("CONFIRMADA", "CANCELADA").
+ * @return Lista de ReservaDTO con las reservas que coinciden.
+ */
+List<ReservaDTO> filtrarReservas(String facultad, String carrera, String categoria, LocalDate fecha, String rango, String estado);
+
 
 }
