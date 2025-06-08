@@ -27,7 +27,7 @@ public class ReservaDTO implements Serializable {
     private LocalDate fechaCreacion;
 
     @NotNull(message = "La fecha de reserva es obligatoria")
-    @FutureOrPresent(message = "La fecha de reserva debe ser hoy o futura")
+    //@FutureOrPresent(message = "La fecha de reserva debe ser hoy o futura")
     @JsonFormat(pattern = "yyyy-MM-dd") 
     private LocalDate fechaReserva;
 

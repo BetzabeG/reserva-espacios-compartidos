@@ -136,6 +136,7 @@ public class ReservaServiceImpl implements IReservaService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La reserva con ID " + id + " no existe."));
 
             reserva.setActivo(false); // Cambia activo a false para eliminarla lógicamente
+            reserva.setFechaCreacion(LocalDate.now()); // Actualiza la fecha de creación a la fecha actual
             reservaRepository.save(reserva);
 
             logger.info("Reserva con ID " + id + " ha sido desactivada (eliminación lógica).");

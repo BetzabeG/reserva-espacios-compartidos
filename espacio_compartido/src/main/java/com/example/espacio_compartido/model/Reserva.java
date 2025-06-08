@@ -36,7 +36,7 @@ public class Reserva {
     private LocalDate fechaCreacion; // Fecha en que se hizo la reserva
 
     @Column(name = "fecha", nullable = false)
-    @FutureOrPresent(message = "La fecha de reserva debe ser hoy o futura")
+    //@FutureOrPresent(message = "La fecha de reserva debe ser hoy o futura")
     @NotNull(message = "La fecha de la reserva es obligatoria")
     private LocalDate fechaReserva; // Fecha en la que se utilizará el espacio
 

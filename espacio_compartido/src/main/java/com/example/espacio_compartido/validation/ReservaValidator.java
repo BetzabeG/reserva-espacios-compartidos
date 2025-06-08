@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @Component
 public class ReservaValidator {
 //prueba
-    private static final Pattern ESTADO_PATTERN = Pattern.compile("^(CONFIRMADA|PENDIENTE|CANCELADA)$");
+    private static final Pattern ESTADO_PATTERN = Pattern.compile("^(CONFIRMADA|CANCELADA)$");
     private static final int MOTIVO_MAX_LENGTH = 255;
     private static final LocalTime HORA_INICIO_PERMITIDA = LocalTime.of(8, 0);
     private static final LocalTime HORA_FIN_PERMITIDA = LocalTime.of(22, 0);
@@ -28,6 +28,9 @@ public class ReservaValidator {
     public void validaFechaReserva(LocalDate fechaReserva) {
         if (fechaReserva == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha no puede ser nula.");
+        }
+        if (fechaReserva.isBefore(LocalDate.now())) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No puedes reservar para una fecha pasada.");
         }
         if (fechaReserva.getYear() < 2025) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El año de la reserva debe ser 2025 o posterior.");
