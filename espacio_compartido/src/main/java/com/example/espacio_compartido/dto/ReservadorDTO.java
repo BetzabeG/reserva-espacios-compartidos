@@ -46,5 +46,4 @@ public class ReservadorDTO implements Serializable {
 
     @NotNull(message = "El estado es obligatorio")
     private Boolean estadoE;
-
 }

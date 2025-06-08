@@ -44,4 +44,8 @@ public class Espacio {
     // Relación con Reserva (Un espacio puede tener múltiples reservas) + manejo de cascada
     @OneToMany(mappedBy = "espacio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reserva> reservas;
+
+    //campo para la imgen
+    @Column(name = "img_espacio")
+    private String imgEspacio;
 }

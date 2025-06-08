@@ -86,7 +86,7 @@ public class ReservaController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
     }
-
+    /* 
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
         logger.info("[CACHE] Eliminando reserva con ID: " + id);
@@ -97,7 +97,18 @@ public class ReservaController {
 
         return ResponseEntity.noContent().build(); 
     }
-    
+    */
+    @PutMapping("/eliminar/{id}")
+    public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
+        logger.info("[CACHE] Cambiando estado de reserva con ID: " + id + " a CANCELADA");
+
+        reservaService.eliminarReserva(id);
+
+        logger.info("[CACHE] Estado de reserva actualizado! Caché eliminado.");
+
+        return ResponseEntity.noContent().build(); 
+    }
+
     @GetMapping("espacioyfecha/{espacioId}/{fecha}")
     public ResponseEntity<List<ReservaDTO>> obtenerReservasPorEspacioYFecha(
             @PathVariable Long espacioId, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
@@ -170,7 +181,7 @@ public class ReservaController {
         return ResponseEntity.ok(reservas);
     }
 
-
+    /* 
     @GetMapping("/api/reserva/filtrocombinado")
     public ResponseEntity<List<ReservaDTO>> filtrarReservas(
             @RequestParam(required = false) String facultad,
@@ -187,5 +198,36 @@ public class ReservaController {
         long fin = System.currentTimeMillis();
         logger.info("[RESERVA] Fin filtrarReservas: {} ms", (fin - inicio));
         return ResponseEntity.ok(reservas);
+    }*/
+    @GetMapping("/api/reserva/filtrocombinado")
+    public ResponseEntity<List<ReservaDTO>> filtrarReservas(
+            @RequestParam(required = false) String facultad,
+            @RequestParam(required = false) String carrera,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) String rango,
+            @RequestParam(required = false) String estado // Filtro adicional para estado
+    ) {
+        long inicio = System.currentTimeMillis();
+        logger.info("[RESERVA] Inicio filtrarReservas con estado: {}", estado);
+
+        List<ReservaDTO> reservas = reservaService.filtrarReservas(facultad, carrera, categoria, fecha, rango, estado);
+
+        long fin = System.currentTimeMillis();
+        logger.info("[RESERVA] Fin filtrarReservas: {} ms (Resultados: {})", (fin - inicio), reservas.size());
+        
+        return ResponseEntity.ok(reservas);
     }
+    @PutMapping("/desactivar/{id}")
+    public ResponseEntity<Void> desactivarReserva(@PathVariable Long id) {
+        logger.info("[CACHE] Desactivando reserva con ID: {}", id);
+
+        reservaService.desactivarReserva(id);
+
+        logger.info("[CACHE] Reserva desactivada correctamente! Caché eliminado.");
+        
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
