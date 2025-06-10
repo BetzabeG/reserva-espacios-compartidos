@@ -94,14 +94,33 @@ public class SecurityConfig {
     }
     
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
-        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    
+    // Especificar explícitamente los encabezados permitidos
+    configuration.setAllowedHeaders(Arrays.asList(
+        "Authorization", 
+        "Content-Type", 
+        "Accept", 
+        "Origin", 
+        "X-Requested-With",
+        "Access-Control-Request-Method", 
+        "Access-Control-Request-Headers"
+    ));
+    
+    // Permitir que el navegador exponga estos encabezados al frontend
+    configuration.setExposedHeaders(Arrays.asList(
+        "Authorization",
+        "Content-Disposition"
+    ));
+    
+    configuration.setAllowCredentials(true);
+    configuration.setMaxAge(3600L); // 1 hora en segundos
+    
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+}
 }
