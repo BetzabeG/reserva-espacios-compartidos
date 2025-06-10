@@ -137,6 +137,7 @@ public class ReservaServiceImpl implements IReservaService {
 
             reserva.setActivo(false); // Cambia activo a false para eliminarla lógicamente
             reserva.setFechaCreacion(LocalDate.now()); // Actualiza la fecha de creación a la fecha actual
+            
             reservaRepository.save(reserva);
 
             logger.info("Reserva con ID " + id + " ha sido desactivada (eliminación lógica).");
@@ -195,9 +196,9 @@ public class ReservaServiceImpl implements IReservaService {
                     .collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional
+    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas","reservasPorEspacioYFecha","reservasPorReservador","reservasPorCorreoReservador","reservasFiltradas"}, allEntries = true) // Limpia caché desactualizado
     public ReservaDTO modificarReserva(Long id, ReservaDTO reservaDTO) {
         Reserva reservaExistente = reservaRepository.findByIdAndActivoTrue(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reserva no encontrada o inactiva"));
