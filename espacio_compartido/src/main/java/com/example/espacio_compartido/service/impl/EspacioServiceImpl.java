@@ -8,6 +8,7 @@ import com.example.espacio_compartido.validation.EspacioValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
@@ -45,6 +46,7 @@ public class EspacioServiceImpl implements IEspacioService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"reservasFiltradas"}, allEntries = true) // Limpia caché desactualizado
     public EspacioDTO crearEspacio(EspacioDTO espacioDTO) {
         espacioValidator.validacionCompletaEspacio(espacioDTO);
         Espacio espacio = convertToEntity(espacioDTO);
@@ -53,6 +55,7 @@ public class EspacioServiceImpl implements IEspacioService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"reservasFiltradas"}, allEntries = true) // Limpia caché desactualizado
     public EspacioDTO actualizarEspacio(Long id, EspacioDTO espacioDTO) {
         Espacio espacioExistente = espacioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Espacio no encontrado"));
@@ -74,6 +77,7 @@ public class EspacioServiceImpl implements IEspacioService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"reservasFiltradas"}, allEntries = true) // Limpia caché desactualizado
     public EspacioDTO eliminarEspacio(Long id) {
         Espacio espacioExistente = espacioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Espacio no encontrado"));
@@ -92,6 +96,7 @@ public class EspacioServiceImpl implements IEspacioService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"reservasFiltradas"}, allEntries = true) // Limpia caché desactualizado
     public void eliminarEspacioFisicamente(Long id) {
         Espacio espacioExistente = espacioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Espacio no encontrado con ID: " + id));
