@@ -39,4 +39,5 @@ public interface IEspacioService {
     List<Integer> obtenerCapacidadesDisponibles();
     
     
+    
 }

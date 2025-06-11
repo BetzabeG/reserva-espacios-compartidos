@@ -198,6 +198,7 @@ public class ReservaServiceImpl implements IReservaService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"reservasPorEstado", "todasLasReservas","reservasPorEspacioYFecha","reservasPorReservador","reservasPorCorreoReservador","reservasFiltradas"}, allEntries = true) // Limpia caché desactualizado
     public ReservaDTO modificarReserva(Long id, ReservaDTO reservaDTO) {
         Reserva reservaExistente = reservaRepository.findByIdAndActivoTrue(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reserva no encontrada o inactiva"));
