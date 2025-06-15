@@ -74,6 +74,14 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/error").permitAll()
+                // Swagger/OpenAPI - acceso público
+                .requestMatchers(
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/swagger-resources/**",
+                    "/webjars/**"
+                ).permitAll()
                 
                 // Rutas para ENCARGADO (solo consultas y reservas)
                 .requestMatchers(HttpMethod.GET, "/api/espacio/**").hasAnyRole("ADMIN", "ENCARGADO")
